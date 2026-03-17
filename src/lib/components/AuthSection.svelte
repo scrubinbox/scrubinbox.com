@@ -1,8 +1,9 @@
 <script>
   import { onMount } from 'svelte';
-  import { isAuthenticated } from '../stores/authStore.js';
+  import { isAuthenticated, userEmail } from '../stores/authStore.js';
   import { addLog } from '../stores/progressStore.js';
   import { initGoogleLibraries, requestAccessToken, revokeToken } from '../gmail/auth.js';
+  import { getProfile } from '../gmail/api.js';
   import { getErrorMessage } from '../errors.js';
 
   let authReady = false;
@@ -27,6 +28,12 @@
     try {
       await requestAccessToken();
       $isAuthenticated = true;
+      try {
+        const profile = await getProfile();
+        $userEmail = profile.emailAddress || '';
+      } catch (e) {
+        $userEmail = '';
+      }
       addLog('Successfully authenticated with Gmail!', 'success');
     } catch (error) {
       addLog(`Authentication failed: ${getErrorMessage(error)}`, 'error');
@@ -40,6 +47,7 @@
     try {
       await revokeToken();
       $isAuthenticated = false;
+      $userEmail = '';
       addLog('Signed out from Gmail', 'info');
     } catch (error) {
       addLog(`Sign out error: ${getErrorMessage(error)}`, 'error');
@@ -56,8 +64,11 @@
       </p>
     </div>
     {#if $isAuthenticated}
-      <div>
+      <div class="text-right">
         <span class="text-green-600 font-semibold">&#10003; Connected</span>
+        {#if $userEmail}
+          <p class="text-sm text-gray-500 mt-1">{$userEmail}</p>
+        {/if}
       </div>
     {/if}
   </div>

@@ -33,8 +33,9 @@
   }
 
   function toggleExpanded() {
+    if (!$isAuthenticated) return;
     isExpanded = !isExpanded;
-    if (isExpanded && $isAuthenticated && !labelsLoaded) {
+    if (isExpanded && !labelsLoaded) {
       fetchLabels();
     }
   }
@@ -44,11 +45,15 @@
   <!-- Header / Toggle -->
   <button
     on:click={toggleExpanded}
-    class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+    disabled={!$isAuthenticated}
+    class="w-full px-6 py-4 flex items-center justify-between transition-colors"
+    class:hover:bg-gray-50={$isAuthenticated}
+    class:opacity-50={!$isAuthenticated}
+    class:cursor-not-allowed={!$isAuthenticated}
   >
     <div class="flex items-center gap-2">
       <span class="text-sm font-medium text-gray-700">Filter Options</span>
-      {#if $excludedDomains.length > 0 || !$useLabelProtection || ($protectedLabelIds !== null && $protectedLabelIds.length > 0)}
+      {#if $excludedDomains.length > 0 || ($useLabelProtection && ($protectedLabelIds === null || $protectedLabelIds.length > 0))}
         <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
           Active
         </span>

@@ -58,8 +58,11 @@ function handleCollectionStarted(data) {
 
 function handleMilestone(data) {
   const { scanned, collected, scan_total, unique_domains } = data;
+  const scannedText = scan_total > 0
+    ? `Scanned ${scanned.toLocaleString()}/${scan_total.toLocaleString()} threads`
+    : `Scanned ${scanned.toLocaleString()} threads`;
   addLog(
-    `Scanned ${scanned.toLocaleString()}/${scan_total.toLocaleString()} threads, collected ${collected.toLocaleString()}, ${unique_domains.toLocaleString()} domains found`,
+    `${scannedText}, collected ${collected.toLocaleString()}, ${unique_domains.toLocaleString()} domains found`,
     'info'
   );
 }

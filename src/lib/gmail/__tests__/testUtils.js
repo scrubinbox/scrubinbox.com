@@ -116,6 +116,16 @@ export function createApiMocks(inboxData, { failThreads = new Set() } = {}) {
       threadsTotal: inboxData.threadsTotal || 0,
     }),
 
+    getProfile: async () => ({
+      emailAddress: 'test@gmail.com',
+      threadsTotal: inboxData.threadsTotal || 0,
+    }),
+
+    getLabelInfo: async (labelId) => ({
+      id: labelId,
+      threadsTotal: 0,
+    }),
+
     listLabels: async () => ({
       labels: [],
     }),
@@ -172,6 +182,8 @@ export function setupApiMocks(api, inboxData, options) {
   const mocks = createApiMocks(inboxData, options);
 
   api.getInboxInfo.mockImplementation(mocks.getInboxInfo);
+  if (api.getProfile) api.getProfile.mockImplementation(mocks.getProfile);
+  if (api.getLabelInfo) api.getLabelInfo.mockImplementation(mocks.getLabelInfo);
   api.listThreads.mockImplementation(mocks.listThreads);
   api.getThread.mockImplementation(mocks.getThread);
   api.trashThread.mockImplementation(mocks.trashThread);

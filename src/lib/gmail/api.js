@@ -25,15 +25,33 @@ async function withTokenRefresh(apiCall) {
 }
 
 /**
- * Get inbox label info (includes threadsTotal for progress reporting).
+ * Get the authenticated user's Gmail profile (email address).
  */
-export function getInboxInfo() {
+export function getProfile() {
+  return withTokenRefresh(() =>
+    gapi.client.gmail.users.getProfile({
+      userId: 'me',
+    })
+  );
+}
+
+/**
+ * Get info for a specific label (includes threadsTotal).
+ */
+export function getLabelInfo(labelId) {
   return withTokenRefresh(() =>
     gapi.client.gmail.users.labels.get({
       userId: 'me',
-      id: 'INBOX',
+      id: labelId,
     })
   );
+}
+
+/**
+ * Get inbox label info (includes threadsTotal for progress reporting).
+ */
+export function getInboxInfo() {
+  return getLabelInfo('INBOX');
 }
 
 /**
