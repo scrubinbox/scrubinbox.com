@@ -1,12 +1,12 @@
 {
-  "name": "gmail-cleaner",
+  "name": "scrubinbox",
   "version": "0.1.0",
-  "description": "A web-based tool to declutter your Gmail inbox",
+  "description": "A free, open source tool to declutter your Gmail inbox",
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/brianleungwh/gmail-cleaner.git"
+    "url": "https://github.com/scrubinbox/scrubinbox.com.git"
   },
   "scripts": {
     "dev": "vite",
