@@ -48,7 +48,7 @@
   >
     <div class="flex items-center gap-2">
       <span class="text-sm font-medium text-gray-700">Filter Options</span>
-      {#if $excludedDomains.length > 0 || !$useLabelProtection || ($protectedLabelIds !== null && $protectedLabelIds.length > 0)}
+      {#if $excludedDomains.length > 0 || ($useLabelProtection && ($protectedLabelIds === null || $protectedLabelIds.length > 0))}
         <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
           Active
         </span>

@@ -10,6 +10,8 @@ import { sampleInbox, createApiMocks, setupApiMocks } from './testUtils.js';
 // Top-level mock with vi.fn() stubs — hoisted safely
 vi.mock('../api.js', () => ({
   getInboxInfo: vi.fn(),
+  getProfile: vi.fn(),
+  getLabelInfo: vi.fn(),
   listThreads: vi.fn(),
   getThread: vi.fn(),
   trashThread: vi.fn(),

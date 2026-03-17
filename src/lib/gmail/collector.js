@@ -2,7 +2,7 @@
  * Domain Collector - Handles domain collection from Gmail inbox
  */
 
-import { getInboxInfo, listThreads, getThread } from './api.js';
+import { getInboxInfo, getProfile, getLabelInfo, listThreads, getThread } from './api.js';
 import { ThreadsList, Thread, CleanupThread, DomainResult, CollectionResult } from '../models/index.js';
 import {
   SUBJECT_TRUNCATE_COLLECTOR,
@@ -152,16 +152,22 @@ export class DomainCollector {
   // === Thread Fetching ===
 
   async _getTotalThreadCount() {
-    if (this.config.includeArchived) {
-      // No single label covers "all mail"; return 0 so the UI shows
-      // progress without a percentage (the poller already handles this).
-      return 0;
-    }
     try {
+      if (this.config.includeArchived) {
+        const [profile, trashInfo, spamInfo] = await Promise.all([
+          getProfile(),
+          getLabelInfo('TRASH'),
+          getLabelInfo('SPAM'),
+        ]);
+        const total = profile.threadsTotal || 0;
+        const trash = trashInfo.threadsTotal || 0;
+        const spam = spamInfo.threadsTotal || 0;
+        return Math.max(total - trash - spam, 0);
+      }
       const inboxInfo = await getInboxInfo();
       return inboxInfo.threadsTotal || 0;
     } catch (e) {
-      console.warn('Could not get inbox thread count:', e);
+      console.warn('Could not get thread count:', e);
       return 0;
     }
   }

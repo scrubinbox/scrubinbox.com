@@ -10,6 +10,8 @@ import { sampleInbox, createApiMocks, setupApiMocks } from './testUtils.js';
 // Top-level mock with vi.fn() stubs — hoisted safely
 vi.mock('../api.js', () => ({
   getInboxInfo: vi.fn(),
+  getProfile: vi.fn(),
+  getLabelInfo: vi.fn(),
   listThreads: vi.fn(),
   getThread: vi.fn(),
   trashThread: vi.fn(),
@@ -356,11 +358,12 @@ describe('collect', () => {
     expect(dr['social.com']).toBeDefined();
   });
 
-  it('includeArchived sets scanTotal to 0', async () => {
+  it('includeArchived sets scanTotal from profile minus trash and spam', async () => {
     const collector = new DomainCollector(defaultConfig({ includeArchived: true }));
     await collector.collect();
 
-    expect(collector.progress.scanTotal).toBe(0);
+    // threadsTotal from profile (11) minus trash (0) minus spam (0)
+    expect(collector.progress.scanTotal).toBe(11);
   });
 
   it('with label protection disabled, custom-labeled threads are collected', async () => {
