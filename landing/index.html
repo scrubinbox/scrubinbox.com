@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScrubInbox — Declutter Your Gmail</title>
+  <meta name="description" content="A free, open source tool to mass unsubscribe and clean up your Gmail inbox.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ink: #1a1a18;
+      --paper: #f6f4f0;
+      --accent: #c44728;
+      --muted: #8a8680;
+      --rule: #d6d2cc;
+    }
+
+    html { font-size: 18px; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- Noise texture overlay --- */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* --- Layout --- */
+    .frame {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- Header --- */
+    header {
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      animation: fade-down 0.8s ease-out both;
+    }
+
+    .wordmark {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .wordmark span {
+      color: var(--accent);
+    }
+
+    header nav a {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    header nav a:hover { color: var(--ink); }
+
+    /* --- Hero --- */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 0;
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      max-width: 14ch;
+      animation: fade-up 0.9s ease-out 0.15s both;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero p {
+      margin-top: 1.5rem;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 42ch;
+      animation: fade-up 0.9s ease-out 0.3s both;
+    }
+
+    .actions {
+      margin-top: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      animation: fade-up 0.9s ease-out 0.45s both;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--paper);
+      background: var(--ink);
+      padding: 0.85rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.25s, transform 0.2s;
+    }
+    .cta:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+    }
+    .cta:active { transform: translateY(0); }
+
+    .cta svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.25s;
+    }
+    .cta:hover svg { transform: translateX(3px); }
+
+    .secondary-link {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .secondary-link:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    /* --- Features row --- */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      animation: fade-up 0.9s ease-out 0.6s both;
+    }
+
+    .feature {
+      background: var(--paper);
+      padding: 1.75rem 1.25rem;
+    }
+
+    .feature-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+
+    .feature h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      font-weight: normal;
+      margin-bottom: 0.4rem;
+    }
+
+    .feature p {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    /* --- Footer --- */
+    footer {
+      padding: 1.5rem 0;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.75rem;
+      color: var(--muted);
+      animation: fade-up 0.9s ease-out 0.75s both;
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    footer a:hover { color: var(--ink); }
+
+    /* --- Animations --- */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade-down {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 600px) {
+      .features { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; align-items: flex-start; }
+      .hero { padding: 3rem 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <a href="/" class="wordmark">Scrub<span>Inbox</span></a>
+      <nav>
+        <a href="https://github.com/scrubinbox/scrubinbox.com">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <h1>A cleaner inbox, <em>effortlessly</em></h1>
+      <p>ScrubInbox is a free, open source tool that helps you mass unsubscribe and clean up your Gmail — so you only see what matters.</p>
+      <div class="actions">
+        <a href="https://app.scrubinbox.com" class="cta">
+          Open ScrubInbox
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8h9M8.5 4l4 4-4 4"/></svg>
+        </a>
+        <a href="https://github.com/scrubinbox/scrubinbox.com" class="secondary-link">View source</a>
+      </div>
+    </main>
+
+    <section class="features">
+      <div class="feature">
+        <div class="feature-label">01</div>
+        <h3>See everything</h3>
+        <p>Scan your inbox for newsletters, notifications, and subscriptions you've forgotten about.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-label">02</div>
+        <h3>One-click cleanup</h3>
+        <p>Unsubscribe and filter out noise with a single click. No tedious manual work.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-label">03</div>
+        <h3>Private by design</h3>
+        <p>Runs entirely in your browser. Your email data never touches our servers.</p>
+      </div>
+    </section>
+
+    <footer>
+      <span>&copy; 2026 ScrubInbox</span>
+      <a href="https://github.com/scrubinbox/scrubinbox.com">Open source under MIT</a>
+    </footer>
+  </div>
+</body>
+</html>
