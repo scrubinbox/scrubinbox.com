@@ -50,3 +50,11 @@ lerna-debug.log*
 
 # Test coverage
 coverage/
+
+# OpenTofu / Terraform
+tf/.terraform/
+tf/*.tfstate
+tf/*.tfstate.backup
+tf/.terraform.lock.hcl
+tf/terraform.tfvars
+tf/run.sh
