@@ -1,141 +1,35 @@
-# Contributing to Gmail Cleaner
+# Contributing to ScrubInbox
 
-First off, thank you for considering contributing to Gmail Cleaner! It's people like you that make this tool better for everyone.
-
-## Code of Conduct
-
-This project and everyone participating in it is governed by our Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
-
-## How Can I Contribute?
-
-### Reporting Bugs
-
-Before creating bug reports, please check the existing issues to avoid duplicates. When creating a bug report, include as many details as possible:
-
-- **Use a clear and descriptive title**
-- **Describe the exact steps to reproduce the problem**
-- **Provide specific examples** (code snippets, screenshots, etc.)
-- **Describe the behavior you observed and what you expected**
-- **Include your environment details** (OS, Node version, browser)
-- **Include relevant logs and error messages**
-
-### Suggesting Enhancements
-
-Enhancement suggestions are tracked as GitHub issues. When creating an enhancement suggestion:
-
-- **Use a clear and descriptive title**
-- **Provide a detailed description of the suggested enhancement**
-- **Explain why this enhancement would be useful**
-- **List any examples of similar features in other tools** (if applicable)
-
-### Pull Requests
-
-1. Fork the repo and create your branch from `main`
-2. Make your changes following our coding standards
-3. Test your changes thoroughly
-4. Update documentation as needed
-5. Write or update tests for your changes
-6. Ensure all tests pass
-7. Submit your pull request
+Thanks for your interest in contributing! Here's how to get started.
 
 ## Development Setup
 
-### Prerequisites
+1. Fork and clone the repo
+2. Install dependencies: `npm install`
+3. Copy `.env.example` to `.env` and add your `VITE_GOOGLE_CLIENT_ID`
+4. Start the dev server: `npm run dev`
+5. Run tests: `npm test`
 
-- Node.js 20+
-- A Google Cloud project with Gmail API enabled (see README for setup)
+## Submitting Changes
 
-### Setting Up Your Development Environment
+1. Create a branch from `main`
+2. Make your changes and add tests if applicable
+3. Ensure all tests pass (`npm test`)
+4. Open a pull request with a title that starts with a semantic prefix:
+   - `feature:` A new feature
+   - `bugfix:` A bug fix
+   - `docs:` Documentation only changes
+   - `style:` Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+   - `refactor:` A code change that neither fixes a bug nor adds a feature
+   - `perf:` A code change that improves performance
+   - `test:` Adding missing tests or correcting existing tests
+   - `build:` Changes that affect the build system or external dependencies
+   - `ci:` Changes to CI configuration files and scripts
+   - `chore:` Other changes that don't modify src or test files
+   - `revert:` Reverts a previous commit
 
-1. **Fork and clone the repository**
-   ```bash
-   git clone https://github.com/brianleungwh/gmail-cleaner.git
-   cd gmail-cleaner
-   ```
+For major changes, please open an issue first to discuss.
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+## License
 
-3. **Configure environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your VITE_GOOGLE_CLIENT_ID
-   ```
-
-4. **Start the dev server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Access the app** at http://localhost:5173
-
-## Coding Standards
-
-### JavaScript/Svelte
-
-- Use ES6+ features
-- Use const/let instead of var
-- Write component-based, reusable code
-- Use Svelte stores for global state
-- Follow Svelte best practices
-- Use Tailwind utility classes for styling
-
-### Commit Messages
-
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
-
-- `feat:` - A new feature
-- `fix:` - A bug fix
-- `docs:` - Documentation only changes
-- `style:` - Changes that don't affect code meaning (whitespace, formatting)
-- `refactor:` - Code change that neither fixes a bug nor adds a feature
-- `perf:` - Performance improvement
-- `test:` - Adding or updating tests
-- `chore:` - Changes to build process or auxiliary tools
-
-## Testing
-
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-```
-
-## Project Structure
-
-```
-gmail-cleaner/
-├── src/
-│   ├── App.svelte                      # Main app layout
-│   ├── main.js                         # Entry point
-│   └── lib/
-│       ├── gmail/                      # Gmail API modules
-│       │   ├── api.js                  # gapi.client.gmail wrapper
-│       │   ├── auth.js                 # GIS + gapi initialization
-│       │   ├── collector.js            # Domain collection logic
-│       │   ├── cleaner.js              # Email cleanup logic
-│       │   ├── progressHandler.js      # Progress -> store updates
-│       │   └── __tests__/              # Vitest unit tests
-│       ├── components/                 # Svelte UI components
-│       └── stores/                     # Svelte stores
-├── index.html
-├── package.json
-├── vite.config.js
-├── .github/workflows/ci.yml
-├── README.md
-├── CONTRIBUTING.md
-└── LICENSE
-```
-
-## Questions?
-
-Feel free to:
-- Open an issue for discussion
-- Join our community discussions
-- Reach out to maintainers
-
-Thank you for contributing!
+By contributing, you agree that your contributions will be licensed under the MIT License.
