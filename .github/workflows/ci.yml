@@ -34,7 +34,7 @@ jobs:
   infra-plan:
     name: Infrastructure Plan
     needs: test-and-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     defaults:
       run:
