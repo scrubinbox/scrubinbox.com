@@ -31,8 +31,8 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: "test-client-id"
         run: npm run build
 
-  infra-plan:
-    name: Infrastructure Plan
+  tofu-plan:
+    name: tofu plan
     needs: test-and-build
     if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -65,9 +65,9 @@ jobs:
           TF_VAR_github_repo_id: ${{ secrets.TF_VAR_GITHUB_REPO_ID }}
         run: tofu plan
 
-  infra-apply:
-    name: Infrastructure Apply
-    needs: infra-plan
+  tofu-apply:
+    name: tofu apply
+    needs: tofu-plan
     runs-on: ubuntu-latest
     environment: production
     defaults:
