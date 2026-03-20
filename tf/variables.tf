@@ -18,13 +18,11 @@ variable "github_repo" {
 variable "github_owner_id" {
   description = "GitHub org/user numeric ID"
   type        = string
-  default = "264962044"
 }
 
 variable "github_repo_id" {
   description = "GitHub repository numeric ID"
   type        = string
-  default = "1182972920"
 }
 
 variable "google_client_id" {
