@@ -1,7 +1,7 @@
 <script>
   import { isAuthenticated } from '../stores/authStore.js';
   import { isCollecting, domains, collectionResult, hasCollectedDomains } from '../stores/collectionStore.js';
-  import { isCleaning, hasSelection, selectedDomains } from '../stores/cleanupStore.js';
+  import { isCleaning, hasSelection, selectedDomains, expandedDomains } from '../stores/cleanupStore.js';
   import { errorMessage } from '../stores/progressStore.js';
   import { excludedDomains, excludedLabelIds } from '../stores/filterStore.js';
   import { showProgress, hideProgress, showDomains } from '../stores/uiStore.js';
@@ -22,6 +22,8 @@
     if ($isCollecting) return;
 
     $isCollecting = true;
+    $selectedDomains = new Set();
+    $expandedDomains = new Set();
     showProgress();
     collectBtnText = 'Scanning...';
 
