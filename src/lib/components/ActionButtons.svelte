@@ -2,7 +2,7 @@
   import { isAuthenticated } from '../stores/authStore.js';
   import { isCollecting, domains, collectionResult, hasCollectedDomains } from '../stores/collectionStore.js';
   import { isCleaning, hasSelection, selectedDomains } from '../stores/cleanupStore.js';
-  import { addLog } from '../stores/progressStore.js';
+  import { errorMessage } from '../stores/progressStore.js';
   import { excludedDomains, excludedLabelIds } from '../stores/filterStore.js';
   import { showProgress, hideProgress, showDomains } from '../stores/uiStore.js';
 
@@ -50,7 +50,7 @@
       }, 1000);
     } catch (error) {
       console.error('Collection error:', error);
-      addLog(`Collection failed: ${getErrorMessage(error)}`, 'error');
+      errorMessage.set(`Collection failed: ${getErrorMessage(error)}`);
       hideProgress();
     } finally {
       stopProgressPolling();
@@ -81,7 +81,7 @@
     try {
       await cleaner.cleanup(threads);
     } catch (error) {
-      addLog(`Cleanup failed: ${getErrorMessage(error)}`, 'error');
+      errorMessage.set(`Cleanup failed: ${getErrorMessage(error)}`);
       hideProgress();
     } finally {
       stopProgressPolling();

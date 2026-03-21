@@ -6,7 +6,6 @@ import { getInboxInfo, getProfile, getLabelInfo, listThreads, getThread } from '
 import { ThreadsList, Thread, CleanupThread, DomainResult, CollectionResult } from '../models/index.js';
 import {
   SUBJECT_TRUNCATE_COLLECTOR,
-  MILESTONE_LOG_INTERVAL,
   THREAD_PAGE_SIZE,
   API_CONCURRENCY,
 } from '../constants.js';
@@ -101,16 +100,6 @@ export class DomainCollector {
           // Update pollable progress in-place (no await, no callback)
           this.progress.collected = collected;
           this.progress.uniqueDomains = Object.keys(domainCounts).length;
-
-          // Milestone logging — infrequent, so callback cost is fine
-          if (collected % MILESTONE_LOG_INTERVAL === 0) {
-            await this._reportProgress('milestone', {
-              scanned,
-              collected,
-              scan_total: scanTotal,
-              unique_domains: Object.keys(domainCounts).length,
-            });
-          }
 
           // Check limit (caps total threads examined, not just matched)
           if (this.config.limit && scanned >= this.config.limit) {

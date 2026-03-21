@@ -1,7 +1,6 @@
 <script>
   import { onMount } from 'svelte';
   import { isAuthenticated, userEmail } from '../stores/authStore.js';
-  import { addLog } from '../stores/progressStore.js';
   import { initGoogleLibraries, requestAccessToken, revokeToken } from '../gmail/auth.js';
   import { getProfile } from '../gmail/api.js';
   import { getErrorMessage } from '../errors.js';
@@ -9,13 +8,14 @@
   let authReady = false;
   let authBtnDisabled = false;
   let authBtnText = 'Sign in with Google';
+  let authError = '';
 
   onMount(async () => {
     try {
       await initGoogleLibraries();
       authReady = true;
     } catch (error) {
-      addLog(`Failed to load Google libraries: ${getErrorMessage(error)}`, 'error');
+      authError = `Failed to load Google libraries: ${getErrorMessage(error)}`;
     }
   });
 
@@ -24,6 +24,7 @@
 
     authBtnDisabled = true;
     authBtnText = 'Authenticating...';
+    authError = '';
 
     try {
       await requestAccessToken();
@@ -34,9 +35,8 @@
       } catch (e) {
         $userEmail = '';
       }
-      addLog('Successfully authenticated with Gmail!', 'success');
     } catch (error) {
-      addLog(`Authentication failed: ${getErrorMessage(error)}`, 'error');
+      authError = `Authentication failed: ${getErrorMessage(error)}`;
     } finally {
       authBtnDisabled = false;
       authBtnText = 'Sign in with Google';
@@ -48,9 +48,8 @@
       await revokeToken();
       $isAuthenticated = false;
       $userEmail = '';
-      addLog('Signed out from Gmail', 'info');
     } catch (error) {
-      addLog(`Sign out error: ${getErrorMessage(error)}`, 'error');
+      authError = `Sign out error: ${getErrorMessage(error)}`;
     }
   }
 </script>
@@ -110,6 +109,12 @@
           Open source
         </span>
       </div>
+    </div>
+  {/if}
+
+  {#if authError}
+    <div class="mt-3 text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+      {authError}
     </div>
   {/if}
 </div>
