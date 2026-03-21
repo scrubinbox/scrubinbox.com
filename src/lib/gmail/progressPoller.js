@@ -64,15 +64,16 @@ function pollCollection(p) {
 }
 
 function pollCleanup(p) {
-  const { processed, processTotal, deleted, dryRun } = p;
-  const action = dryRun ? 'Previewing' : 'Cleaning';
+  const { processed, processTotal, deleted, dryRun, permanentDelete } = p;
+  const action = dryRun ? 'Previewing' : permanentDelete ? 'Deleting' : 'Trashing';
 
   if (processTotal > 0) {
     const percentage = Math.round((processed / processTotal) * 100);
     progressIndeterminate.set(false);
     progressPercent.set(percentage);
+    const verb = permanentDelete ? 'deleted' : 'trashed';
     progressText.set(
-      `${action}: ${processed}/${processTotal} threads (${deleted} deleted)`
+      `${action}: ${processed}/${processTotal} threads (${deleted} ${verb})`
     );
   } else {
     progressText.set(`${action}...`);

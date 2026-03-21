@@ -16,6 +16,7 @@
   let collectBtnText = 'Scan Inbox';
   let scanLimitInput = '';
   let includeArchived = false;
+  let permanentDelete = false;
 
   async function collectDomains() {
     if ($isCollecting) return;
@@ -63,7 +64,11 @@
     if ($isCleaning) return;
 
     if (!dryRun) {
-      if (!confirm('Are you sure you want to delete the selected domains? This action cannot be undone.')) {
+      const action = permanentDelete ? 'permanently delete' : 'trash';
+      const warning = permanentDelete
+        ? 'This CANNOT be undone. Threads will be permanently deleted.'
+        : 'Threads will be moved to trash and can be recovered within 30 days.';
+      if (!confirm(`Are you sure you want to ${action} threads from the selected domains?\n\n${warning}`)) {
         return;
       }
     }
@@ -73,7 +78,7 @@
 
     const threads = $collectionResult.getCleanupThreads($selectedDomains);
 
-    const config = new CleanerConfig({ dryRun });
+    const config = new CleanerConfig({ dryRun, permanentDelete });
     const progressHandler = createProgressHandler();
     const cleaner = new DomainCleaner(config, progressHandler);
     startProgressPolling(cleaner, 'cleanup');
@@ -138,21 +143,33 @@
 
     <!-- Cleanup Controls -->
     {#if $hasCollectedDomains}
-      <div class="flex flex-wrap gap-2 pt-2 border-t border-sage-100">
+      <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-sage-100">
         <button
           on:click={previewCleanup}
           disabled={previewDisabled}
           class="bg-sage-100 hover:bg-sage-200 text-sage-700 font-medium py-2 px-4 rounded-lg disabled:bg-sage-50 disabled:text-sage-300 disabled:cursor-not-allowed transition-colors text-sm"
         >
-          Preview Cleanup
+          Preview
         </button>
         <button
           on:click={executeCleanup}
           disabled={cleanupDisabled}
           class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-medium py-2 px-4 rounded-lg disabled:bg-sage-50 disabled:text-sage-300 disabled:cursor-not-allowed transition-colors text-sm border border-red-200 disabled:border-sage-100"
         >
-          Delete Selected
+          {permanentDelete ? 'Permanently Delete' : 'Move to Trash'}
         </button>
+
+        <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer select-none ml-auto"
+          class:text-red-500={permanentDelete}
+          class:text-sage-400={!permanentDelete}
+        >
+          <input
+            type="checkbox"
+            bind:checked={permanentDelete}
+            class="rounded border-sage-300 text-red-500 focus:ring-red-300"
+          />
+          Permanent delete
+        </label>
       </div>
     {/if}
   </div>

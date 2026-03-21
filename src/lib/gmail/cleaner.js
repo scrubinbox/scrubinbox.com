@@ -2,7 +2,7 @@
  * Domain Cleaner - Handles email cleanup for selected domains
  */
 
-import { trashThread } from './api.js';
+import { trashThread, deleteThread } from './api.js';
 import { CleanupStats } from '../models/index.js';
 import { API_CONCURRENCY } from '../constants.js';
 import { asyncPool } from '../asyncPool.js';
@@ -20,6 +20,7 @@ export class DomainCleaner {
       processTotal: 0,
       deleted: 0,
       dryRun: false,
+      permanentDelete: false,
       status: 'idle',
     };
   }
@@ -34,6 +35,7 @@ export class DomainCleaner {
     // Initialize pollable progress
     this.progress.processTotal = threads.length;
     this.progress.dryRun = this.config.dryRun;
+    this.progress.permanentDelete = this.config.permanentDelete;
     this.progress.status = 'running';
     this.progress.processed = 0;
     this.progress.deleted = 0;
@@ -63,7 +65,7 @@ export class DomainCleaner {
     } else {
       // Batch trash calls concurrently
       const results = await asyncPool(threads, API_CONCURRENCY, async (thread) => {
-        return { thread, success: await this._trashThread(thread.thread_id) };
+        return { thread, success: await this._removeThread(thread.thread_id) };
       });
 
       for (const { thread, success } of results) {
@@ -93,12 +95,16 @@ export class DomainCleaner {
 
   // === Thread Processing ===
 
-  async _trashThread(threadId) {
+  async _removeThread(threadId) {
     try {
-      await trashThread(threadId);
+      if (this.config.permanentDelete) {
+        await deleteThread(threadId);
+      } else {
+        await trashThread(threadId);
+      }
       return true;
     } catch (error) {
-      console.error(`Error trashing thread ${threadId}:`, error);
+      console.error(`Error removing thread ${threadId}:`, error);
       return false;
     }
   }
