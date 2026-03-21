@@ -31,7 +31,7 @@
 <div>
   <div class="flex items-center justify-between mb-2">
     <span class="block text-sm font-medium text-sage-700">
-      Exclude Labeled Threads
+      Exclude labeled threads
     </span>
     <div class="flex gap-2">
       <button
