@@ -15,6 +15,7 @@ vi.mock('../api.js', () => ({
   listThreads: vi.fn(),
   getThread: vi.fn(),
   trashThread: vi.fn(),
+  deleteThread: vi.fn(),
 }));
 
 import * as api from '../api.js';
@@ -50,29 +51,14 @@ describe('cleanup', () => {
     currentMocks = setupApiMocks(api, sampleInbox());
   });
 
-  it('dry run reports deletions without actually trashing', async () => {
-    const cleaner = new DomainCleaner(new CleanerConfig({ dryRun: true }));
+  it('trashes threads by default', async () => {
+    const cleaner = new DomainCleaner(new CleanerConfig());
     const result = await cleaner.cleanup(sampleThreads());
 
-    // Should report all threads as deleted
-    expect(result.threads_processed).toBe(3);
-    expect(result.threads_deleted).toBe(3);
-    expect(result.messages_deleted).toBe(6); // 2 + 1 + 3
-
-    // But no threads should actually be trashed
-    expect(currentMocks.trashedThreads.size).toBe(0);
-  });
-
-  it('live run actually trashes threads', async () => {
-    const cleaner = new DomainCleaner(new CleanerConfig({ dryRun: false }));
-    const result = await cleaner.cleanup(sampleThreads());
-
-    // Should report all threads as deleted
     expect(result.threads_processed).toBe(3);
     expect(result.threads_deleted).toBe(3);
     expect(result.messages_deleted).toBe(6);
 
-    // Threads should actually be trashed
     expect(currentMocks.trashedThreads.size).toBe(3);
     expect(currentMocks.trashedThreads.has('thread_001')).toBe(true);
     expect(currentMocks.trashedThreads.has('thread_002')).toBe(true);
@@ -80,7 +66,7 @@ describe('cleanup', () => {
   });
 
   it('empty thread list returns zero stats', async () => {
-    const cleaner = new DomainCleaner(new CleanerConfig({ dryRun: true }));
+    const cleaner = new DomainCleaner(new CleanerConfig());
     const result = await cleaner.cleanup([]);
 
     expect(result.threads_processed).toBe(0);
@@ -92,44 +78,35 @@ describe('cleanup', () => {
   it('handles trash error gracefully', async () => {
     currentMocks = setupApiMocks(api, sampleInbox(), { failThreads: new Set(['thread_001']) });
 
-    const cleaner = new DomainCleaner(new CleanerConfig({ dryRun: false }));
+    const cleaner = new DomainCleaner(new CleanerConfig());
     const result = await cleaner.cleanup(sampleThreads());
 
-    // All threads processed
     expect(result.threads_processed).toBe(3);
-
-    // thread_001 should fail, others succeed
     expect(result.threads_deleted).toBe(2);
-    expect(result.messages_kept).toBe(2); // thread_001 has 2 messages
-    expect(result.messages_deleted).toBe(4); // 1 + 3 from successful threads
+    expect(result.messages_kept).toBe(2);
+    expect(result.messages_deleted).toBe(4);
   });
 
-  it('calls progress callback with lifecycle events (not per-thread)', async () => {
+  it('calls progress callback with lifecycle events', async () => {
     const progressEvents = [];
     const callback = async (event, data) => progressEvents.push([event, data]);
 
-    const cleaner = new DomainCleaner(new CleanerConfig({ dryRun: true }), callback);
+    const cleaner = new DomainCleaner(new CleanerConfig(), callback);
     await cleaner.cleanup(sampleThreads());
 
     const eventTypes = progressEvents.map(e => e[0]);
     expect(eventTypes).toContain('cleanup_started');
     expect(eventTypes).toContain('cleanup_completed');
-    // Per-thread callbacks are no longer emitted — replaced by pollable progress
-    expect(eventTypes).not.toContain('thread_analyzed');
-    expect(eventTypes).not.toContain('would_delete');
-    expect(eventTypes).not.toContain('deleted');
   });
 
   it('updates progress object during cleanup', async () => {
-    const cleaner = new DomainCleaner(new CleanerConfig({ dryRun: true }));
+    const cleaner = new DomainCleaner(new CleanerConfig());
 
-    // Before cleanup
     expect(cleaner.progress.status).toBe('idle');
     expect(cleaner.progress.processed).toBe(0);
 
     await cleaner.cleanup(sampleThreads());
 
-    // After cleanup
     expect(cleaner.progress.status).toBe('completed');
     expect(cleaner.progress.processed).toBe(3);
     expect(cleaner.progress.deleted).toBe(3);
@@ -167,9 +144,8 @@ describe('interrupt handling', () => {
   });
 
   it('stops when interrupted flag is set', async () => {
-    const cleaner = new DomainCleaner(new CleanerConfig({ dryRun: true }));
+    const cleaner = new DomainCleaner(new CleanerConfig());
 
-    // Set interrupted after cleanup_started fires (before any thread processing)
     cleaner.progressCallback = async (event) => {
       if (event === 'cleanup_started') {
         cleaner.interrupted = true;
@@ -178,7 +154,6 @@ describe('interrupt handling', () => {
 
     const result = await cleaner.cleanup(sampleThreads());
 
-    // Should have stopped early (processed 0 threads since interrupted before loop)
     expect(result.threads_processed).toBeLessThan(sampleThreads().length);
   });
 });

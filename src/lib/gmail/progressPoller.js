@@ -64,8 +64,8 @@ function pollCollection(p) {
 }
 
 function pollCleanup(p) {
-  const { processed, processTotal, deleted, dryRun, permanentDelete } = p;
-  const action = dryRun ? 'Previewing' : permanentDelete ? 'Deleting' : 'Trashing';
+  const { processed, processTotal, deleted, permanentDelete } = p;
+  const action = permanentDelete ? 'Deleting' : 'Trashing';
 
   if (processTotal > 0) {
     const percentage = Math.round((processed / processTotal) * 100);

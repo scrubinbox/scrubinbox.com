@@ -129,7 +129,7 @@
             {$selectedCount} {$selectedCount === 1 ? 'domain' : 'domains'} selected
           </div>
           <div class="text-[11px] text-sage-400">
-            Use the buttons above to preview or delete
+            Use the button above to trash or delete
           </div>
         </div>
       </div>

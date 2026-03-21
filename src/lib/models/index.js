@@ -30,8 +30,7 @@ export class CollectorConfig {
  * Configuration for DomainCleaner.
  */
 export class CleanerConfig {
-  constructor({ dryRun = false, permanentDelete = false, limit = null } = {}) {
-    this.dryRun = dryRun;
+  constructor({ permanentDelete = false, limit = null } = {}) {
     this.permanentDelete = permanentDelete;
     this.limit = limit;
   }

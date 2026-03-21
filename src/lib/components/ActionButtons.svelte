@@ -60,17 +60,15 @@
     }
   }
 
-  async function performCleanup(dryRun) {
+  async function executeCleanup() {
     if ($isCleaning) return;
 
-    if (!dryRun) {
-      const action = permanentDelete ? 'permanently delete' : 'trash';
-      const warning = permanentDelete
-        ? 'This CANNOT be undone. Threads will be permanently deleted.'
-        : 'Threads will be moved to trash and can be recovered within 30 days.';
-      if (!confirm(`Are you sure you want to ${action} threads from the selected domains?\n\n${warning}`)) {
-        return;
-      }
+    const action = permanentDelete ? 'permanently delete' : 'trash';
+    const warning = permanentDelete
+      ? 'This CANNOT be undone. Threads will be permanently deleted.'
+      : 'Threads will be moved to trash and can be recovered within 30 days.';
+    if (!confirm(`Are you sure you want to ${action} threads from the selected domains?\n\n${warning}`)) {
+      return;
     }
 
     $isCleaning = true;
@@ -78,7 +76,7 @@
 
     const threads = $collectionResult.getCleanupThreads($selectedDomains);
 
-    const config = new CleanerConfig({ dryRun, permanentDelete });
+    const config = new CleanerConfig({ permanentDelete });
     const progressHandler = createProgressHandler();
     const cleaner = new DomainCleaner(config, progressHandler);
     startProgressPolling(cleaner, 'cleanup');
@@ -94,16 +92,7 @@
     }
   }
 
-  function previewCleanup() {
-    performCleanup(true);
-  }
-
-  function executeCleanup() {
-    performCleanup(false);
-  }
-
   $: collectDisabled = !$isAuthenticated || $isCollecting;
-  $: previewDisabled = !$hasCollectedDomains || !$hasSelection || $isCleaning;
   $: cleanupDisabled = !$hasCollectedDomains || !$hasSelection || $isCleaning;
 </script>
 
@@ -144,13 +133,6 @@
     <!-- Cleanup Controls -->
     {#if $hasCollectedDomains}
       <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-sage-100">
-        <button
-          on:click={previewCleanup}
-          disabled={previewDisabled}
-          class="bg-sage-100 hover:bg-sage-200 text-sage-700 font-medium py-2 px-4 rounded-lg disabled:bg-sage-50 disabled:text-sage-300 disabled:cursor-not-allowed transition-colors text-sm"
-        >
-          Preview
-        </button>
         <button
           on:click={executeCleanup}
           disabled={cleanupDisabled}

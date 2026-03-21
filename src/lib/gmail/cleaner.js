@@ -19,7 +19,6 @@ export class DomainCleaner {
       processed: 0,
       processTotal: 0,
       deleted: 0,
-      dryRun: false,
       permanentDelete: false,
       status: 'idle',
     };
@@ -34,14 +33,12 @@ export class DomainCleaner {
 
     // Initialize pollable progress
     this.progress.processTotal = threads.length;
-    this.progress.dryRun = this.config.dryRun;
     this.progress.permanentDelete = this.config.permanentDelete;
     this.progress.status = 'running';
     this.progress.processed = 0;
     this.progress.deleted = 0;
 
     await this._reportProgress('cleanup_started', {
-      dry_run: this.config.dryRun,
       process_total: threads.length,
     });
 
@@ -50,39 +47,24 @@ export class DomainCleaner {
     let messagesDeleted = 0;
     let messagesKept = 0;
 
-    if (this.config.dryRun) {
-      // No API calls — simple sequential loop
-      for (const thread of threads) {
-        if (this.interrupted) break;
+    const results = await asyncPool(threads, API_CONCURRENCY, async (thread) => {
+      return { thread, success: await this._removeThread(thread.thread_id) };
+    });
 
+    for (const { thread, success } of results) {
+      if (this.interrupted) break;
+
+      if (success) {
         threadsDeleted += 1;
         messagesDeleted += thread.message_count;
-        totalProcessed += 1;
-
-        this.progress.processed = totalProcessed;
-        this.progress.deleted = threadsDeleted;
+      } else {
+        messagesKept += thread.message_count;
       }
-    } else {
-      // Batch trash calls concurrently
-      const results = await asyncPool(threads, API_CONCURRENCY, async (thread) => {
-        return { thread, success: await this._removeThread(thread.thread_id) };
-      });
 
-      for (const { thread, success } of results) {
-        if (this.interrupted) break;
+      totalProcessed += 1;
 
-        if (success) {
-          threadsDeleted += 1;
-          messagesDeleted += thread.message_count;
-        } else {
-          messagesKept += thread.message_count;
-        }
-
-        totalProcessed += 1;
-
-        this.progress.processed = totalProcessed;
-        this.progress.deleted = threadsDeleted;
-      }
+      this.progress.processed = totalProcessed;
+      this.progress.deleted = threadsDeleted;
     }
 
     this.progress.status = 'completed';
