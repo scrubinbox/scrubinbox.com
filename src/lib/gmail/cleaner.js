@@ -44,8 +44,7 @@ export class DomainCleaner {
 
     let totalProcessed = 0;
     let threadsDeleted = 0;
-    let messagesDeleted = 0;
-    let messagesKept = 0;
+    let threadsFailed = 0;
 
     await asyncPool(threads, API_CONCURRENCY, async (thread) => {
       if (this.interrupted) return;
@@ -54,9 +53,8 @@ export class DomainCleaner {
 
       if (success) {
         threadsDeleted += 1;
-        messagesDeleted += thread.message_count;
       } else {
-        messagesKept += thread.message_count;
+        threadsFailed += 1;
       }
 
       totalProcessed += 1;
@@ -66,7 +64,7 @@ export class DomainCleaner {
 
     this.progress.status = 'completed';
 
-    const result = DomainCleaner.buildStats(totalProcessed, threadsDeleted, messagesDeleted, messagesKept);
+    const result = DomainCleaner.buildStats(totalProcessed, threadsDeleted, threadsFailed);
     await this._reportProgress('cleanup_completed', result);
 
     return result;
@@ -98,12 +96,11 @@ export class DomainCleaner {
 
   // === Results ===
 
-  static buildStats(processed, deleted, messagesDeleted, kept) {
+  static buildStats(processed, deleted, failed) {
     return new CleanupStats({
       threads_processed: processed,
       threads_deleted: deleted,
-      messages_deleted: messagesDeleted,
-      messages_kept: kept,
+      threads_failed_to_delete: failed,
     });
   }
 }
