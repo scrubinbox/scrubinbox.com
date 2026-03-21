@@ -62,7 +62,7 @@
     const warning = permanentDelete
       ? 'This CANNOT be undone. Threads will be permanently deleted.'
       : 'Threads will be moved to trash and can be recovered within 30 days.';
-    if (!confirm(`Are you sure you want to ${action} threads from the selected domains?\n\n${warning}`)) {
+    if (!confirm(`Are you sure you want to ${action} threads from the selected sender domains?\n\n${warning}`)) {
       return;
     }
 
@@ -89,16 +89,16 @@
   $: cleanupDisabled = !$hasSelection || $isCleaning;
 
   $: searchResultsText = searchQuery.trim()
-    ? `${filteredDomains.length} of ${Object.keys($domains).length} domains`
-    : `${Object.keys($domains).length} domains found`;
+    ? `${filteredDomains.length} of ${Object.keys($domains).length} sender domains`
+    : `${Object.keys($domains).length} sender domains found`;
 </script>
 
 {#if $domainsVisible}
   <div class="bg-white rounded-xl shadow-sm border border-sage-200 overflow-hidden">
     <!-- Header -->
     <div class="px-5 pt-5 pb-4">
-      <h3 class="text-sm font-semibold text-sage-700 mb-0.5">Review Domains</h3>
-      <p class="text-xs text-sage-400">Select domains to delete. Starred, important, and excluded labeled emails are skipped.</p>
+      <h3 class="text-sm font-semibold text-sage-700 mb-0.5">Review Sender Domains</h3>
+      <p class="text-xs text-sage-400">Select sender domains to clean up. Starred, important, and excluded labeled emails are skipped.</p>
     </div>
 
     <!-- Controls -->
@@ -109,7 +109,7 @@
           <input
             bind:value={searchQuery}
             type="text"
-            placeholder="Search domains and subjects..."
+            placeholder="Search sender domains and subjects..."
             class="w-full pl-9 pr-3 py-2 border border-sage-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-300 focus:border-transparent text-sm text-sage-700 placeholder-sage-300"
           >
         </div>
@@ -136,7 +136,7 @@
     <div class="bg-sage-50 border-y border-sage-100 px-5 py-2.5">
       <div class="flex items-center gap-3">
         <div class="w-5"></div>
-        <div class="flex-1 text-[10px] font-semibold text-sage-400 uppercase tracking-wider">Domain</div>
+        <div class="flex-1 text-[10px] font-semibold text-sage-400 uppercase tracking-wider">Sender Domain</div>
         <div class="w-16 text-[10px] font-semibold text-sage-400 uppercase tracking-wider text-right">Threads</div>
         <div class="w-7"></div>
       </div>
@@ -147,9 +147,9 @@
       {#if filteredDomains.length === 0}
         <div class="p-8 text-center text-sage-300 text-sm">
           {#if searchQuery.trim()}
-            No domains match your search.
+            No sender domains match your search.
           {:else}
-            No domains found.
+            No sender domains found.
           {/if}
         </div>
       {:else}
@@ -166,7 +166,7 @@
       <div class="px-5 py-3 bg-sage-50 border-t border-sage-100">
         <div class="flex flex-wrap items-center gap-3">
           <div class="text-xs font-semibold text-sage-600">
-            {$selectedCount} {$selectedCount === 1 ? 'domain' : 'domains'} selected
+            {$selectedCount} sender {$selectedCount === 1 ? 'domain' : 'domains'} selected
           </div>
 
           <div class="flex items-center gap-3 ml-auto">
