@@ -47,12 +47,10 @@ export class DomainCleaner {
     let messagesDeleted = 0;
     let messagesKept = 0;
 
-    const results = await asyncPool(threads, API_CONCURRENCY, async (thread) => {
-      return { thread, success: await this._removeThread(thread.thread_id) };
-    });
+    await asyncPool(threads, API_CONCURRENCY, async (thread) => {
+      if (this.interrupted) return;
 
-    for (const { thread, success } of results) {
-      if (this.interrupted) break;
+      const success = await this._removeThread(thread.thread_id);
 
       if (success) {
         threadsDeleted += 1;
@@ -62,10 +60,9 @@ export class DomainCleaner {
       }
 
       totalProcessed += 1;
-
       this.progress.processed = totalProcessed;
       this.progress.deleted = threadsDeleted;
-    }
+    });
 
     this.progress.status = 'completed';
 
