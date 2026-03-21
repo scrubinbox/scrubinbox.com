@@ -102,56 +102,58 @@
   $: cleanupDisabled = !$hasCollectedDomains || !$hasSelection || $isCleaning;
 </script>
 
-<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+<div class="bg-white rounded-xl shadow-sm p-5 border border-sage-200">
   <div class="flex flex-col gap-4">
     <!-- Scan Controls -->
-    <div class="flex flex-wrap items-center gap-4">
+    <div class="flex flex-wrap items-center gap-3">
       <button
         on:click={collectDomains}
         disabled={collectDisabled}
-        class="bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 px-5 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        class="bg-sage-600 hover:bg-sage-700 text-white font-semibold py-2 px-5 rounded-lg disabled:bg-sage-200 disabled:cursor-not-allowed transition-colors text-sm"
       >
         {collectBtnText}
       </button>
 
       <div class="flex items-center gap-2">
-        <label for="scan-limit" class="text-sm text-gray-600">Limit:</label>
+        <label for="scan-limit" class="text-xs font-medium text-sage-400">Limit:</label>
         <input
           id="scan-limit"
           type="number"
           bind:value={scanLimitInput}
           placeholder="All"
           min="1"
-          class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent text-sm"
+          class="w-20 px-2.5 py-2 border border-sage-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-300 focus:border-transparent text-sm text-sage-700"
         />
       </div>
 
-      <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+      <label class="flex items-center gap-1.5 text-xs font-medium text-sage-400 cursor-pointer select-none">
         <input
           type="checkbox"
           bind:checked={includeArchived}
-          class="rounded border-gray-300 text-slate-800 focus:ring-slate-400"
+          class="rounded border-sage-300 text-sage-600 focus:ring-sage-300"
         />
         Include archived
       </label>
     </div>
 
     <!-- Cleanup Controls -->
-    <div class="flex flex-wrap gap-3">
-      <button
-        on:click={previewCleanup}
-        disabled={previewDisabled}
-        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-      >
-        Preview Cleanup
-      </button>
-      <button
-        on:click={executeCleanup}
-        disabled={cleanupDisabled}
-        class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-5 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-      >
-        Execute Cleanup
-      </button>
-    </div>
+    {#if $hasCollectedDomains}
+      <div class="flex flex-wrap gap-2 pt-2 border-t border-sage-100">
+        <button
+          on:click={previewCleanup}
+          disabled={previewDisabled}
+          class="bg-sage-100 hover:bg-sage-200 text-sage-700 font-medium py-2 px-4 rounded-lg disabled:bg-sage-50 disabled:text-sage-300 disabled:cursor-not-allowed transition-colors text-sm"
+        >
+          Preview Cleanup
+        </button>
+        <button
+          on:click={executeCleanup}
+          disabled={cleanupDisabled}
+          class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-medium py-2 px-4 rounded-lg disabled:bg-sage-50 disabled:text-sage-300 disabled:cursor-not-allowed transition-colors text-sm border border-red-200 disabled:border-sage-100"
+        >
+          Delete Selected
+        </button>
+      </div>
+    {/if}
   </div>
 </div>

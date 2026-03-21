@@ -1,6 +1,11 @@
-<div class="bg-slate-800 rounded-xl shadow-lg p-6 mb-6">
-  <h1 class="text-2xl font-bold text-white">
-    ScrubInbox
-  </h1>
-  <p class="text-slate-400 text-sm mt-1">Clean your inbox by reviewing and selecting domains to delete</p>
+<div class="bg-sage-700 shadow-sm">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <div class="flex items-center gap-3 py-4">
+      <img src="/favicon/scrubinbox-icon.svg" alt="ScrubInbox" class="w-8 h-8 rounded-lg" />
+      <div>
+        <h1 class="text-lg font-bold text-white tracking-tight">ScrubInbox</h1>
+        <p class="text-sage-300 text-xs">Scan, review, and clean up your Gmail inbox</p>
+      </div>
+    </div>
+  </div>
 </div>

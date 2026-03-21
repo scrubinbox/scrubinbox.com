@@ -8,9 +8,9 @@
   import ResultsSection from './lib/components/ResultsSection.svelte';
 </script>
 
-<div class="min-h-screen bg-gray-100">
-  <div class="container mx-auto px-4 py-8 max-w-5xl">
-    <Header />
+<div class="min-h-screen bg-sage-50">
+  <Header />
+  <div class="container mx-auto px-4 py-6 max-w-4xl">
     <div class="space-y-4">
       <AuthSection />
       <FilterOptions />
