@@ -10,14 +10,6 @@
   $: isSelected = $selectedDomains.has(domain);
   $: isExpanded = $expandedDomains.has(domain);
 
-  $: if (isSelected && !isExpanded) {
-    expandedDomains.update(set => {
-      const newSet = new Set(set);
-      newSet.add(domain);
-      return newSet;
-    });
-  }
-
   function toggleSelection() {
     selectedDomains.update(set => {
       const newSet = new Set(set);
