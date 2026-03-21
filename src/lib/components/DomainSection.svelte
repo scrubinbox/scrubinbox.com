@@ -58,7 +58,7 @@
     <!-- Header -->
     <div class="px-5 pt-5 pb-4">
       <h3 class="text-sm font-semibold text-sage-700 mb-0.5">Review Domains</h3>
-      <p class="text-xs text-sage-400">Select domains to delete. Starred, important, and labeled emails are protected.</p>
+      <p class="text-xs text-sage-400">Select domains to delete. Starred, important, and excluded labeled emails are skipped.</p>
     </div>
 
     <!-- Controls -->

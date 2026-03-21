@@ -1,6 +1,6 @@
 <script>
   import { isAuthenticated } from '../stores/authStore.js';
-  import { excludedDomains, protectedLabelIds, availableLabels } from '../stores/filterStore.js';
+  import { excludedDomains, excludedLabelIds, availableLabels } from '../stores/filterStore.js';
   import { listLabels } from '../gmail/api.js';
   import { getErrorMessage } from '../errors.js';
   import DomainExcludeInput from './DomainExcludeInput.svelte';
@@ -53,7 +53,7 @@
     <div class="flex items-center gap-2">
       <svg class="w-4 h-4 text-sage-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
       <span class="text-sm font-medium text-sage-700">Filter Options</span>
-      {#if $excludedDomains.length > 0 || $protectedLabelIds === null || ($protectedLabelIds && $protectedLabelIds.length > 0)}
+      {#if $excludedDomains.length > 0 || $excludedLabelIds === null || ($excludedLabelIds && $excludedLabelIds.length > 0)}
         <span class="px-2 py-0.5 bg-sage-100 text-sage-600 text-xs font-medium rounded-full">
           Active
         </span>

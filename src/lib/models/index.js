@@ -14,14 +14,14 @@ export class CollectorConfig {
   constructor({
     limit = null,
     excludedDomains = new Set(),
-    useLabelProtection = true,
-    protectedLabelIds = null,
+    useLabelExclusion = true,
+    excludedLabelIds = null,
     includeArchived = false,
   } = {}) {
     this.limit = limit;
     this.excludedDomains = excludedDomains;
-    this.useLabelProtection = useLabelProtection;
-    this.protectedLabelIds = protectedLabelIds;
+    this.useLabelExclusion = useLabelExclusion;
+    this.excludedLabelIds = excludedLabelIds;
     this.includeArchived = includeArchived;
   }
 }

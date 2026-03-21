@@ -1,37 +1,37 @@
 <script>
   import { isAuthenticated } from '../stores/authStore.js';
-  import { protectedLabelIds, availableLabels } from '../stores/filterStore.js';
+  import { excludedLabelIds, availableLabels } from '../stores/filterStore.js';
 
   export let isLoadingLabels = false;
   export let labelsError = '';
 
   function handleLabelToggle(labelId) {
-    if ($protectedLabelIds === null) {
-      protectedLabelIds.set([labelId]);
-    } else if ($protectedLabelIds.includes(labelId)) {
-      const updated = $protectedLabelIds.filter(id => id !== labelId);
-      protectedLabelIds.set(updated.length > 0 ? updated : null);
+    if ($excludedLabelIds === null) {
+      excludedLabelIds.set([labelId]);
+    } else if ($excludedLabelIds.includes(labelId)) {
+      const updated = $excludedLabelIds.filter(id => id !== labelId);
+      excludedLabelIds.set(updated.length > 0 ? updated : null);
     } else {
-      protectedLabelIds.set([...$protectedLabelIds, labelId]);
+      excludedLabelIds.set([...$excludedLabelIds, labelId]);
     }
   }
 
   function selectAllLabels() {
-    protectedLabelIds.set(null);
+    excludedLabelIds.set(null);
   }
 
   function selectNoLabels() {
-    protectedLabelIds.set([]);
+    excludedLabelIds.set([]);
   }
 
-  $: allLabelsSelected = $protectedLabelIds === null;
-  $: noLabelsSelected = $protectedLabelIds !== null && $protectedLabelIds.length === 0;
+  $: allLabelsSelected = $excludedLabelIds === null;
+  $: noLabelsSelected = $excludedLabelIds !== null && $excludedLabelIds.length === 0;
 </script>
 
 <div>
   <div class="flex items-center justify-between mb-2">
     <span class="block text-sm font-medium text-sage-700">
-      Select Labels to Protect
+      Exclude Labeled Threads
     </span>
     <div class="flex gap-2">
       <button
@@ -53,11 +53,11 @@
   </div>
   <p class="text-xs text-sage-400 mb-2.5">
     {#if allLabelsSelected}
-      All custom labels will protect threads from being scanned
+      Threads with selected labels will be excluded from scan
     {:else if noLabelsSelected}
-      No labels will protect threads (only starred/important)
+      No labels excluded (only starred/important threads are excluded)
     {:else}
-      Only selected labels will protect threads
+      Threads with selected labels will be excluded from scan
     {/if}
   </p>
 
@@ -83,12 +83,12 @@
         <button
           on:click={() => handleLabelToggle(label.id)}
           class="px-2.5 py-1 text-xs rounded-full border transition-colors"
-          class:bg-sage-500={allLabelsSelected || ($protectedLabelIds && $protectedLabelIds.includes(label.id))}
-          class:text-white={allLabelsSelected || ($protectedLabelIds && $protectedLabelIds.includes(label.id))}
-          class:border-sage-500={allLabelsSelected || ($protectedLabelIds && $protectedLabelIds.includes(label.id))}
-          class:bg-white={!allLabelsSelected && (!$protectedLabelIds || !$protectedLabelIds.includes(label.id))}
-          class:text-sage-600={!allLabelsSelected && (!$protectedLabelIds || !$protectedLabelIds.includes(label.id))}
-          class:border-sage-200={!allLabelsSelected && (!$protectedLabelIds || !$protectedLabelIds.includes(label.id))}
+          class:bg-sage-500={allLabelsSelected || ($excludedLabelIds && $excludedLabelIds.includes(label.id))}
+          class:text-white={allLabelsSelected || ($excludedLabelIds && $excludedLabelIds.includes(label.id))}
+          class:border-sage-500={allLabelsSelected || ($excludedLabelIds && $excludedLabelIds.includes(label.id))}
+          class:bg-white={!allLabelsSelected && (!$excludedLabelIds || !$excludedLabelIds.includes(label.id))}
+          class:text-sage-600={!allLabelsSelected && (!$excludedLabelIds || !$excludedLabelIds.includes(label.id))}
+          class:border-sage-200={!allLabelsSelected && (!$excludedLabelIds || !$excludedLabelIds.includes(label.id))}
         >
           {label.name}
         </button>

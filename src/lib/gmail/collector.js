@@ -200,14 +200,14 @@ export class DomainCollector {
 
   // === Filtering ===
 
-  _isProtected(labelIds) {
-    // Always protect IMPORTANT and STARRED
+  _isExcludedByLabel(labelIds) {
+    // Always exclude IMPORTANT and STARRED from cleanup
     if (labelIds.includes('IMPORTANT') || labelIds.includes('STARRED')) {
       return true;
     }
 
-    // Skip label protection if disabled
-    if (!this.config.useLabelProtection) {
+    // Skip label exclusion if disabled
+    if (!this.config.useLabelExclusion) {
       return false;
     }
 
@@ -215,22 +215,22 @@ export class DomainCollector {
     const customLabels = labelIds.filter((l) => l.startsWith('Label_'));
     if (customLabels.length === 0) return false;
 
-    // If specific labels provided, only protect those
-    if (this.config.protectedLabelIds !== null) {
-      return customLabels.some((l) => this.config.protectedLabelIds.has(l));
+    // If specific labels provided, only exclude those
+    if (this.config.excludedLabelIds !== null) {
+      return customLabels.some((l) => this.config.excludedLabelIds.has(l));
     }
 
-    // Otherwise protect any custom label (default behavior)
+    // Otherwise exclude any custom-labeled thread (default behavior)
     return true;
   }
 
-  _isExcluded(domain) {
+  _isExcludedByDomain(domain) {
     return this.config.excludedDomains.has(domain);
   }
 
   _shouldInclude(thread) {
-    if (this._isProtected(thread.getLabelIds())) return false;
-    if (this._isExcluded(thread.getDomain())) return false;
+    if (this._isExcludedByLabel(thread.getLabelIds())) return false;
+    if (this._isExcludedByDomain(thread.getDomain())) return false;
     return true;
   }
 
