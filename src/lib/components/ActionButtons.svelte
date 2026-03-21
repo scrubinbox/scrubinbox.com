@@ -3,7 +3,7 @@
   import { isCollecting, domains, collectionResult, hasCollectedDomains } from '../stores/collectionStore.js';
   import { isCleaning, hasSelection, selectedDomains } from '../stores/cleanupStore.js';
   import { addLog } from '../stores/progressStore.js';
-  import { excludedDomains, useLabelProtection, protectedLabelIds } from '../stores/filterStore.js';
+  import { excludedDomains, protectedLabelIds } from '../stores/filterStore.js';
   import { showProgress, hideProgress, showDomains } from '../stores/uiStore.js';
 
   import { CollectorConfig, CleanerConfig } from '../models/index.js';
@@ -29,7 +29,7 @@
     const config = new CollectorConfig({
       limit,
       excludedDomains: new Set($excludedDomains),
-      useLabelProtection: $useLabelProtection,
+      useLabelProtection: $protectedLabelIds === null || $protectedLabelIds.length > 0,
       protectedLabelIds: $protectedLabelIds ? new Set($protectedLabelIds) : null,
       includeArchived,
     });
