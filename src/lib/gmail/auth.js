@@ -7,7 +7,7 @@
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest';
-const SCOPES = 'https://www.googleapis.com/auth/gmail.modify';
+const SCOPES = 'https://mail.google.com/';
 
 let tokenClient = null;
 let gapiInited = false;
