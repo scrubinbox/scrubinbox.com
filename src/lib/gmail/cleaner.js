@@ -44,32 +44,27 @@ export class DomainCleaner {
 
     let totalProcessed = 0;
     let threadsDeleted = 0;
-    let messagesDeleted = 0;
-    let messagesKept = 0;
+    let threadsFailed = 0;
 
-    const results = await asyncPool(threads, API_CONCURRENCY, async (thread) => {
-      return { thread, success: await this._removeThread(thread.thread_id) };
-    });
+    await asyncPool(threads, API_CONCURRENCY, async (thread) => {
+      if (this.interrupted) return;
 
-    for (const { thread, success } of results) {
-      if (this.interrupted) break;
+      const success = await this._removeThread(thread.thread_id);
 
       if (success) {
         threadsDeleted += 1;
-        messagesDeleted += thread.message_count;
       } else {
-        messagesKept += thread.message_count;
+        threadsFailed += 1;
       }
 
       totalProcessed += 1;
-
       this.progress.processed = totalProcessed;
       this.progress.deleted = threadsDeleted;
-    }
+    });
 
     this.progress.status = 'completed';
 
-    const result = DomainCleaner.buildStats(totalProcessed, threadsDeleted, messagesDeleted, messagesKept);
+    const result = DomainCleaner.buildStats(totalProcessed, threadsDeleted, threadsFailed);
     await this._reportProgress('cleanup_completed', result);
 
     return result;
@@ -101,12 +96,11 @@ export class DomainCleaner {
 
   // === Results ===
 
-  static buildStats(processed, deleted, messagesDeleted, kept) {
+  static buildStats(processed, deleted, failed) {
     return new CleanupStats({
       threads_processed: processed,
       threads_deleted: deleted,
-      messages_deleted: messagesDeleted,
-      messages_kept: kept,
+      threads_failed_to_delete: failed,
     });
   }
 }

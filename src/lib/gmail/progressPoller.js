@@ -52,13 +52,13 @@ function pollCollection(p) {
     progressIndeterminate.set(false);
     progressPercent.set(percentage);
     progressText.set(
-      `Scanned ${scanned.toLocaleString()}/${scanTotal.toLocaleString()} threads, found ${collected.toLocaleString()} under ${uniqueDomains.toLocaleString()} domains`
+      `Scanned ${scanned.toLocaleString()}/${scanTotal.toLocaleString()} threads, found ${collected.toLocaleString()} under ${uniqueDomains.toLocaleString()} sender domains`
     );
   } else {
     progressIndeterminate.set(true);
     progressPercent.set(100);
     progressText.set(
-      `Scanned ${scanned.toLocaleString()} threads, found ${collected.toLocaleString()} under ${uniqueDomains.toLocaleString()} domains`
+      `Scanned ${scanned.toLocaleString()} threads, found ${collected.toLocaleString()} under ${uniqueDomains.toLocaleString()} sender domains`
     );
   }
 }

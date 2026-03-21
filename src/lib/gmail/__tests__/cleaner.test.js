@@ -57,7 +57,7 @@ describe('cleanup', () => {
 
     expect(result.threads_processed).toBe(3);
     expect(result.threads_deleted).toBe(3);
-    expect(result.messages_deleted).toBe(6);
+    expect(result.threads_failed_to_delete).toBe(0);
 
     expect(currentMocks.trashedThreads.size).toBe(3);
     expect(currentMocks.trashedThreads.has('thread_001')).toBe(true);
@@ -71,8 +71,7 @@ describe('cleanup', () => {
 
     expect(result.threads_processed).toBe(0);
     expect(result.threads_deleted).toBe(0);
-    expect(result.messages_deleted).toBe(0);
-    expect(result.messages_kept).toBe(0);
+    expect(result.threads_failed_to_delete).toBe(0);
   });
 
   it('handles trash error gracefully', async () => {
@@ -83,8 +82,7 @@ describe('cleanup', () => {
 
     expect(result.threads_processed).toBe(3);
     expect(result.threads_deleted).toBe(2);
-    expect(result.messages_kept).toBe(2);
-    expect(result.messages_deleted).toBe(4);
+    expect(result.threads_failed_to_delete).toBe(1);
   });
 
   it('calls progress callback with lifecycle events', async () => {
@@ -117,21 +115,19 @@ describe('cleanup', () => {
 
 describe('buildStats', () => {
   it('includes all fields', () => {
-    const result = DomainCleaner.buildStats(10, 8, 20, 5);
+    const result = DomainCleaner.buildStats(10, 8, 2);
 
     expect(result.threads_processed).toBe(10);
     expect(result.threads_deleted).toBe(8);
-    expect(result.messages_deleted).toBe(20);
-    expect(result.messages_kept).toBe(5);
+    expect(result.threads_failed_to_delete).toBe(2);
   });
 
   it('handles all zeros', () => {
-    const result = DomainCleaner.buildStats(0, 0, 0, 0);
+    const result = DomainCleaner.buildStats(0, 0, 0);
 
     expect(result.threads_processed).toBe(0);
     expect(result.threads_deleted).toBe(0);
-    expect(result.messages_deleted).toBe(0);
-    expect(result.messages_kept).toBe(0);
+    expect(result.threads_failed_to_delete).toBe(0);
   });
 });
 

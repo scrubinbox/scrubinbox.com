@@ -1,11 +1,18 @@
 <script>
-  import { domains } from '../stores/collectionStore.js';
-  import { selectedDomains, selectedCount } from '../stores/cleanupStore.js';
-  import { domainsVisible } from '../stores/uiStore.js';
+  import { domains, collectionResult } from '../stores/collectionStore.js';
+  import { isCleaning, hasSelection, selectedDomains, selectedCount } from '../stores/cleanupStore.js';
+  import { errorMessage } from '../stores/progressStore.js';
+  import { domainsVisible, showProgress } from '../stores/uiStore.js';
+  import { CleanerConfig } from '../models/index.js';
+  import { DomainCleaner } from '../gmail/cleaner.js';
+  import { createProgressHandler } from '../gmail/progressHandler.js';
+  import { startProgressPolling, stopProgressPolling } from '../gmail/progressPoller.js';
+  import { getErrorMessage } from '../errors.js';
   import DomainItem from './DomainItem.svelte';
 
   let searchQuery = '';
   let filteredDomains = [];
+  let permanentDelete = false;
 
   function updateFilteredDomains() {
     if (!searchQuery.trim()) {
@@ -48,17 +55,50 @@
     });
   }
 
+  async function executeCleanup() {
+    if ($isCleaning) return;
+
+    const action = permanentDelete ? 'permanently delete' : 'trash';
+    const warning = permanentDelete
+      ? 'This CANNOT be undone. Threads will be permanently deleted.'
+      : 'Threads will be moved to trash and can be recovered within 30 days.';
+    if (!confirm(`Are you sure you want to ${action} threads from the selected sender domains?\n\n${warning}`)) {
+      return;
+    }
+
+    $isCleaning = true;
+    showProgress();
+
+    const threads = $collectionResult.getCleanupThreads($selectedDomains);
+
+    const config = new CleanerConfig({ permanentDelete });
+    const progressHandler = createProgressHandler();
+    const cleaner = new DomainCleaner(config, progressHandler);
+    startProgressPolling(cleaner, 'cleanup');
+
+    try {
+      await cleaner.cleanup(threads);
+    } catch (error) {
+      errorMessage.set(`Cleanup failed: ${getErrorMessage(error)}`);
+    } finally {
+      stopProgressPolling();
+      $isCleaning = false;
+    }
+  }
+
+  $: cleanupDisabled = !$hasSelection || $isCleaning;
+
   $: searchResultsText = searchQuery.trim()
-    ? `${filteredDomains.length} of ${Object.keys($domains).length} domains`
-    : `${Object.keys($domains).length} domains found`;
+    ? `${filteredDomains.length} of ${Object.keys($domains).length} sender domains`
+    : `${Object.keys($domains).length} sender domains found`;
 </script>
 
 {#if $domainsVisible}
   <div class="bg-white rounded-xl shadow-sm border border-sage-200 overflow-hidden">
     <!-- Header -->
     <div class="px-5 pt-5 pb-4">
-      <h3 class="text-sm font-semibold text-sage-700 mb-0.5">Review Domains</h3>
-      <p class="text-xs text-sage-400">Select domains to delete. Starred, important, and excluded labeled emails are skipped.</p>
+      <h3 class="text-sm font-semibold text-sage-700 mb-0.5">Review Sender Domains</h3>
+      <p class="text-xs text-sage-400">Select sender domains to clean up. Starred, important, and excluded labeled emails are skipped.</p>
     </div>
 
     <!-- Controls -->
@@ -69,7 +109,7 @@
           <input
             bind:value={searchQuery}
             type="text"
-            placeholder="Search domains and subjects..."
+            placeholder="Search sender domains and subjects..."
             class="w-full pl-9 pr-3 py-2 border border-sage-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-300 focus:border-transparent text-sm text-sage-700 placeholder-sage-300"
           >
         </div>
@@ -96,7 +136,7 @@
     <div class="bg-sage-50 border-y border-sage-100 px-5 py-2.5">
       <div class="flex items-center gap-3">
         <div class="w-5"></div>
-        <div class="flex-1 text-[10px] font-semibold text-sage-400 uppercase tracking-wider">Domain</div>
+        <div class="flex-1 text-[10px] font-semibold text-sage-400 uppercase tracking-wider">Sender Domain</div>
         <div class="w-16 text-[10px] font-semibold text-sage-400 uppercase tracking-wider text-right">Threads</div>
         <div class="w-7"></div>
       </div>
@@ -107,9 +147,9 @@
       {#if filteredDomains.length === 0}
         <div class="p-8 text-center text-sage-300 text-sm">
           {#if searchQuery.trim()}
-            No domains match your search.
+            No sender domains match your search.
           {:else}
-            No domains found.
+            No sender domains found.
           {/if}
         </div>
       {:else}
@@ -121,15 +161,34 @@
       {/if}
     </div>
 
-    <!-- Summary Footer -->
+    <!-- Action Footer -->
     {#if $selectedCount > 0}
       <div class="px-5 py-3 bg-sage-50 border-t border-sage-100">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center gap-3">
           <div class="text-xs font-semibold text-sage-600">
-            {$selectedCount} {$selectedCount === 1 ? 'domain' : 'domains'} selected
+            {$selectedCount} sender {$selectedCount === 1 ? 'domain' : 'domains'} selected
           </div>
-          <div class="text-[11px] text-sage-400">
-            Use the button above to trash or delete
+
+          <div class="flex items-center gap-3 ml-auto">
+            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer select-none"
+              class:text-red-500={permanentDelete}
+              class:text-sage-400={!permanentDelete}
+            >
+              <input
+                type="checkbox"
+                bind:checked={permanentDelete}
+                class="rounded border-sage-300 text-red-500 focus:ring-red-300"
+              />
+              Permanent delete
+            </label>
+
+            <button
+              on:click={executeCleanup}
+              disabled={cleanupDisabled}
+              class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-medium py-2 px-4 rounded-lg disabled:bg-sage-50 disabled:text-sage-300 disabled:cursor-not-allowed transition-colors text-sm border border-red-200 disabled:border-sage-100"
+            >
+              {permanentDelete ? 'Permanently Delete' : 'Move to Trash'}
+            </button>
           </div>
         </div>
       </div>

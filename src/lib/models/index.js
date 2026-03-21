@@ -190,11 +190,10 @@ export class DomainResult {
  * Stats returned by DomainCleaner after a cleanup run.
  */
 export class CleanupStats {
-  constructor({ threads_processed, threads_deleted, messages_deleted, messages_kept }) {
+  constructor({ threads_processed, threads_deleted, threads_failed_to_delete }) {
     this.threads_processed = threads_processed;
     this.threads_deleted = threads_deleted;
-    this.messages_deleted = messages_deleted;
-    this.messages_kept = messages_kept;
+    this.threads_failed_to_delete = threads_failed_to_delete;
   }
 }
 

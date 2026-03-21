@@ -17,10 +17,10 @@
 
 <div>
   <label for="excluded-domains" class="block text-sm font-medium text-sage-700 mb-1.5">
-    Exclude Domains from Scan
+    Exclude sender domains from scan
   </label>
   <p class="text-xs text-sage-400 mb-2">
-    Threads from these domains will not appear in scan results
+    Threads from these sender domains will not appear in scan results
   </p>
   <input
     id="excluded-domains"
