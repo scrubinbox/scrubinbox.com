@@ -75,79 +75,79 @@ describe('extractDomain', () => {
   });
 });
 
-// === Protection Logic Tests ===
+// === Label Exclusion Logic Tests ===
 
-describe('isProtected', () => {
+describe('isExcludedByLabel', () => {
   function makeCollector(configOverrides = {}) {
     return new DomainCollector(new CollectorConfig(configOverrides));
   }
 
-  it('IMPORTANT label should always protect', () => {
+  it('IMPORTANT label should always exclude', () => {
     const collector = makeCollector();
-    expect(collector._isProtected(['INBOX', 'IMPORTANT'])).toBe(true);
+    expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(true);
   });
 
-  it('STARRED label should always protect', () => {
+  it('STARRED label should always exclude', () => {
     const collector = makeCollector();
-    expect(collector._isProtected(['INBOX', 'STARRED'])).toBe(true);
+    expect(collector._isExcludedByLabel(['INBOX', 'STARRED'])).toBe(true);
   });
 
-  it('custom labels protect by default', () => {
+  it('custom labels exclude by default', () => {
     const collector = makeCollector();
-    expect(collector._isProtected(['INBOX', 'Label_12345'])).toBe(true);
+    expect(collector._isExcludedByLabel(['INBOX', 'Label_12345'])).toBe(true);
   });
 
-  it('custom labels do not protect when disabled', () => {
-    const collector = makeCollector({ useLabelProtection: false });
-    expect(collector._isProtected(['INBOX', 'Label_12345'])).toBe(false);
+  it('custom labels do not exclude when label exclusion disabled', () => {
+    const collector = makeCollector({ useLabelExclusion: false });
+    expect(collector._isExcludedByLabel(['INBOX', 'Label_12345'])).toBe(false);
   });
 
-  it('IMPORTANT still protects when label protection disabled', () => {
-    const collector = makeCollector({ useLabelProtection: false });
-    expect(collector._isProtected(['INBOX', 'IMPORTANT'])).toBe(true);
+  it('IMPORTANT still excluded when label exclusion disabled', () => {
+    const collector = makeCollector({ useLabelExclusion: false });
+    expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(true);
   });
 
-  it('specific protectedLabelIds only protect matching labels', () => {
-    const collector = makeCollector({ protectedLabelIds: new Set(['Label_12345']) });
+  it('specific excludedLabelIds only exclude matching labels', () => {
+    const collector = makeCollector({ excludedLabelIds: new Set(['Label_12345']) });
 
-    // Matching label should protect
-    expect(collector._isProtected(['INBOX', 'Label_12345'])).toBe(true);
+    // Matching label should exclude
+    expect(collector._isExcludedByLabel(['INBOX', 'Label_12345'])).toBe(true);
 
-    // Non-matching custom label should not protect
-    expect(collector._isProtected(['INBOX', 'Label_99999'])).toBe(false);
+    // Non-matching custom label should not exclude
+    expect(collector._isExcludedByLabel(['INBOX', 'Label_99999'])).toBe(false);
   });
 
-  it('regular INBOX label does not protect', () => {
+  it('regular INBOX label does not exclude', () => {
     const collector = makeCollector();
-    expect(collector._isProtected(['INBOX'])).toBe(false);
+    expect(collector._isExcludedByLabel(['INBOX'])).toBe(false);
   });
 
-  it('empty labels do not protect', () => {
+  it('empty labels do not exclude', () => {
     const collector = makeCollector();
-    expect(collector._isProtected([])).toBe(false);
+    expect(collector._isExcludedByLabel([])).toBe(false);
   });
 });
 
-// === Exclusion Logic Tests ===
+// === Domain Exclusion Logic Tests ===
 
-describe('isExcluded', () => {
+describe('isExcludedByDomain', () => {
   function makeCollector(excludedDomains = new Set()) {
     return new DomainCollector(new CollectorConfig({ excludedDomains }));
   }
 
   it('domain in exclusion list is excluded', () => {
     const collector = makeCollector(new Set(['spam.com', 'junk.com']));
-    expect(collector._isExcluded('spam.com')).toBe(true);
+    expect(collector._isExcludedByDomain('spam.com')).toBe(true);
   });
 
   it('domain not in exclusion list is not excluded', () => {
     const collector = makeCollector(new Set(['spam.com', 'junk.com']));
-    expect(collector._isExcluded('social.com')).toBe(false);
+    expect(collector._isExcludedByDomain('social.com')).toBe(false);
   });
 
   it('empty exclusion list excludes nothing', () => {
     const collector = makeCollector();
-    expect(collector._isExcluded('spam.com')).toBe(false);
+    expect(collector._isExcludedByDomain('spam.com')).toBe(false);
   });
 });
 
@@ -175,7 +175,7 @@ describe('shouldInclude', () => {
     expect(collector._shouldInclude(thread)).toBe(true);
   });
 
-  it('protected thread is excluded', () => {
+  it('labeled/important thread is excluded', () => {
     const collector = makeCollector();
     const thread = makeThread('test@important.com', ['INBOX', 'IMPORTANT']);
     expect(collector._shouldInclude(thread)).toBe(false);
@@ -207,7 +207,7 @@ describe('collect', () => {
     const result = await collector.collect();
     const dr = result.domainResults;
 
-    // Should have collected domains (excluding protected ones)
+    // Should have collected domains (excluding starred/important/labeled ones)
     expect(Object.keys(dr).length).toBeGreaterThan(0);
 
     // spam.com should have 2 threads (thread_001, thread_002)
@@ -219,7 +219,7 @@ describe('collect', () => {
     expect(dr['social.com'].count).toBe(1);
   });
 
-  it('skips protected threads', async () => {
+  it('skips excluded threads', async () => {
     const collector = new DomainCollector(defaultConfig());
     const result = await collector.collect();
     const dr = result.domainResults;
@@ -366,15 +366,15 @@ describe('collect', () => {
     expect(collector.progress.scanTotal).toBe(11);
   });
 
-  it('with label protection disabled, custom-labeled threads are collected', async () => {
-    const collector = new DomainCollector(defaultConfig({ useLabelProtection: false }));
+  it('with label exclusion disabled, custom-labeled threads are collected', async () => {
+    const collector = new DomainCollector(defaultConfig({ useLabelExclusion: false }));
     const result = await collector.collect();
     const dr = result.domainResults;
 
-    // labeled.com should now be in results (custom label no longer protects)
+    // labeled.com should now be in results (custom label no longer excluded)
     expect(dr['labeled.com']).toBeDefined();
 
-    // But IMPORTANT and STARRED should still be protected
+    // But IMPORTANT and STARRED should still be excluded
     expect(dr['important.com']).toBeUndefined();
     expect(dr['starred.com']).toBeUndefined();
   });

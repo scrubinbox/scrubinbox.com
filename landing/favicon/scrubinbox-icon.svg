@@ -1,0 +1,22 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#7A9E7E"/>
+  <rect x="8" y="8" width="496" height="496" rx="108" fill="none" stroke="#5C7F63" stroke-width="2" opacity="0.3"/>
+  <rect x="116" y="180" width="280" height="190" rx="16" fill="#fff" opacity="0.95"/>
+  <path d="M116 196 L256 300 L396 196" fill="none" stroke="#7A9E7E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M116 370 L206 300" fill="none" stroke="#7A9E7E" stroke-width="4" stroke-linecap="round" opacity="0.25"/>
+  <path d="M396 370 L306 300" fill="none" stroke="#7A9E7E" stroke-width="4" stroke-linecap="round" opacity="0.25"/>
+  <g transform="translate(370, 140)">
+    <line x1="0" y1="-22" x2="0" y2="22" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <line x1="-22" y1="0" x2="22" y2="0" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <line x1="-14" y1="-14" x2="14" y2="14" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <line x1="14" y1="-14" x2="-14" y2="14" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(145, 130)">
+    <line x1="0" y1="-12" x2="0" y2="12" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity="0.7"/>
+    <line x1="-12" y1="0" x2="12" y2="0" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  <g transform="translate(420, 260)">
+    <line x1="0" y1="-9" x2="0" y2="9" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+    <line x1="-9" y1="0" x2="9" y2="0" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  </g>
+</svg>

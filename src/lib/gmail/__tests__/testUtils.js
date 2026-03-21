@@ -67,7 +67,7 @@ export function sampleInbox() {
     makeThread('thread_002', 'Promo <promo@spam.com>', 'Limited time offer', ['INBOX']),
     makeThread('thread_003', 'Updates <updates@social.com>', 'New friend request', ['INBOX']),
 
-    // Protected threads
+    // Excluded threads (starred, important, labeled)
     makeThread('thread_004', 'Boss <boss@important.com>', 'Q4 Review', ['INBOX', 'IMPORTANT']),
     makeThread('thread_005', 'Friend <friend@starred.com>', 'Party invite', ['INBOX', 'STARRED']),
     makeThread('thread_006', 'Bank <bank@labeled.com>', 'Statement', ['INBOX', 'Label_12345']),

@@ -16,10 +16,10 @@
 </script>
 
 <div>
-  <label for="excluded-domains" class="block text-sm font-medium text-gray-700 mb-2">
+  <label for="excluded-domains" class="block text-sm font-medium text-sage-700 mb-1.5">
     Exclude Domains from Scan
   </label>
-  <p class="text-xs text-gray-500 mb-2">
+  <p class="text-xs text-sage-400 mb-2">
     Threads from these domains will not appear in scan results
   </p>
   <input
@@ -28,16 +28,16 @@
     value={$excludedDomains.join(', ')}
     on:input={handleDomainInputChange}
     placeholder="example.com, newsletter.com"
-    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent"
+    class="w-full px-3 py-2 border border-sage-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sage-300 focus:border-transparent text-sage-700 placeholder-sage-300"
   />
   {#if $excludedDomains.length > 0}
-    <div class="flex flex-wrap gap-2 mt-2">
+    <div class="flex flex-wrap gap-1.5 mt-2">
       {#each $excludedDomains as domain}
-        <span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+        <span class="inline-flex items-center gap-1 px-2 py-1 bg-sage-100 text-sage-600 text-xs rounded-md font-medium">
           {domain}
           <button
             on:click={() => removeDomain(domain)}
-            class="text-gray-400 hover:text-gray-600"
+            class="text-sage-400 hover:text-sage-600"
             aria-label="Remove {domain}"
           >
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -38,34 +38,42 @@ export function stopProgressPolling() {
 }
 
 function pollCollection(p) {
-  const { scanned, scanTotal, collected, uniqueDomains } = p;
+  const { status, scanned, scanTotal, collected, uniqueDomains } = p;
+
+  if (status === 'completed') {
+    progressIndeterminate.set(false);
+    progressPercent.set(100);
+    progressText.set(`Collection complete — ${collected.toLocaleString()} threads in ${uniqueDomains.toLocaleString()} domains`);
+    return;
+  }
 
   if (scanTotal > 0) {
     const percentage = Math.min(Math.round((scanned / scanTotal) * 100), 99);
     progressIndeterminate.set(false);
     progressPercent.set(percentage);
     progressText.set(
-      `Scanned ${scanned.toLocaleString()}/${scanTotal.toLocaleString()} threads, found ${collected.toLocaleString()} in ${uniqueDomains.toLocaleString()} domains`
+      `Scanned ${scanned.toLocaleString()}/${scanTotal.toLocaleString()} threads, found ${collected.toLocaleString()} under ${uniqueDomains.toLocaleString()} domains`
     );
   } else {
     progressIndeterminate.set(true);
     progressPercent.set(100);
     progressText.set(
-      `Scanned ${scanned.toLocaleString()} threads, found ${collected.toLocaleString()} in ${uniqueDomains.toLocaleString()} domains`
+      `Scanned ${scanned.toLocaleString()} threads, found ${collected.toLocaleString()} under ${uniqueDomains.toLocaleString()} domains`
     );
   }
 }
 
 function pollCleanup(p) {
-  const { processed, processTotal, deleted, dryRun } = p;
-  const action = dryRun ? 'Previewing' : 'Cleaning';
+  const { processed, processTotal, deleted, permanentDelete } = p;
+  const action = permanentDelete ? 'Deleting' : 'Trashing';
 
   if (processTotal > 0) {
     const percentage = Math.round((processed / processTotal) * 100);
     progressIndeterminate.set(false);
     progressPercent.set(percentage);
+    const verb = permanentDelete ? 'deleted' : 'trashed';
     progressText.set(
-      `${action}: ${processed}/${processTotal} threads (${deleted} deleted)`
+      `${action}: ${processed}/${processTotal} threads (${deleted} ${verb})`
     );
   } else {
     progressText.set(`${action}...`);

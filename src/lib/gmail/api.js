@@ -102,3 +102,15 @@ export function trashThread(threadId) {
     })
   );
 }
+
+/**
+ * Permanently delete a thread. Cannot be undone.
+ */
+export function deleteThread(threadId) {
+  return withTokenRefresh(() =>
+    gapi.client.gmail.users.threads.delete({
+      userId: 'me',
+      id: threadId,
+    })
+  );
+}

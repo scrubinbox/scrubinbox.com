@@ -1,12 +1,30 @@
 @import "tailwindcss";
 
+@theme {
+  --color-sage-50: #F4F8F5;
+  --color-sage-100: #E8F0E9;
+  --color-sage-200: #D4DFD6;
+  --color-sage-300: #A8C4AC;
+  --color-sage-400: #7A9E7E;
+  --color-sage-500: #5C7F63;
+  --color-sage-600: #4A6B4F;
+  --color-sage-700: #3D5C42;
+  --color-sage-800: #2C3E2F;
+  --color-sage-900: #1A2B1D;
+}
+
+body {
+  font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
 /* Indeterminate progress bar animation */
 @layer utilities {
   .indeterminate {
     background: linear-gradient(90deg,
-      rgba(59, 130, 246, 0.3) 0%,
-      rgba(59, 130, 246, 1) 50%,
-      rgba(59, 130, 246, 0.3) 100%);
+      rgba(122, 158, 126, 0.3) 0%,
+      rgba(122, 158, 126, 1) 50%,
+      rgba(122, 158, 126, 0.3) 100%);
     background-size: 200% 100%;
     animation: indeterminate 1.5s ease-in-out infinite;
   }

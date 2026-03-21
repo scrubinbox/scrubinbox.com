@@ -14,12 +14,10 @@
       const query = searchQuery.toLowerCase();
 
       filteredDomains = Object.entries($domains).filter(([domain, info]) => {
-        // Search in domain name
         if (domain.toLowerCase().includes(query)) {
           return true;
         }
 
-        // Search in thread subjects
         const threads = info.threads || [];
         return threads.some(thread =>
           thread.subject.toLowerCase().includes(query)
@@ -28,15 +26,13 @@
     }
   }
 
-  // Update filtered domains when domains or search query changes
   $: {
-    $domains;  // React to domains changes
-    searchQuery;  // React to search query changes
+    $domains;
+    searchQuery;
     updateFilteredDomains();
   }
 
   function selectAll() {
-    // Select all visible domains
     selectedDomains.update(set => {
       const newSet = new Set(set);
       filteredDomains.forEach(([domain]) => newSet.add(domain));
@@ -45,7 +41,6 @@
   }
 
   function deselectAll() {
-    // Deselect all visible domains
     selectedDomains.update(set => {
       const newSet = new Set(set);
       filteredDomains.forEach(([domain]) => newSet.delete(domain));
@@ -54,42 +49,43 @@
   }
 
   $: searchResultsText = searchQuery.trim()
-    ? `Showing ${filteredDomains.length} of ${Object.keys($domains).length} domains`
-    : 'Showing all domains';
+    ? `${filteredDomains.length} of ${Object.keys($domains).length} domains`
+    : `${Object.keys($domains).length} domains found`;
 </script>
 
 {#if $domainsVisible}
-  <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+  <div class="bg-white rounded-xl shadow-sm border border-sage-200 overflow-hidden">
     <!-- Header -->
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-1">Review Domains</h3>
-      <p class="text-sm text-gray-500">Select domains to delete. Protected emails (starred, important, or labeled) are excluded.</p>
+    <div class="px-5 pt-5 pb-4">
+      <h3 class="text-sm font-semibold text-sage-700 mb-0.5">Review Domains</h3>
+      <p class="text-xs text-sage-400">Select domains to delete. Starred, important, and excluded labeled emails are skipped.</p>
     </div>
 
-    <!-- Controls Bar -->
-    <div class="mb-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-      <!-- Search Box -->
-      <div class="w-full sm:w-auto sm:flex-1 sm:max-w-md">
-        <input
-          bind:value={searchQuery}
-          type="text"
-          placeholder="Search domains and subjects..."
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent text-sm"
-        >
-        <div class="text-xs text-gray-500 mt-1">{searchResultsText}</div>
+    <!-- Controls -->
+    <div class="px-5 pb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+      <div class="w-full sm:w-auto sm:flex-1 sm:max-w-sm">
+        <div class="relative">
+          <svg class="w-4 h-4 text-sage-300 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input
+            bind:value={searchQuery}
+            type="text"
+            placeholder="Search domains and subjects..."
+            class="w-full pl-9 pr-3 py-2 border border-sage-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-300 focus:border-transparent text-sm text-sage-700 placeholder-sage-300"
+          >
+        </div>
+        <div class="text-[11px] text-sage-300 mt-1">{searchResultsText}</div>
       </div>
 
-      <!-- Select Controls -->
       <div class="flex gap-2 flex-shrink-0">
         <button
           on:click={selectAll}
-          class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+          class="text-xs font-medium text-sage-500 hover:text-sage-700 py-1.5 px-3 rounded-md hover:bg-sage-50 transition-colors"
         >
           Select All
         </button>
         <button
           on:click={deselectAll}
-          class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+          class="text-xs font-medium text-sage-500 hover:text-sage-700 py-1.5 px-3 rounded-md hover:bg-sage-50 transition-colors"
         >
           Deselect All
         </button>
@@ -97,19 +93,19 @@
     </div>
 
     <!-- Table Header -->
-    <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 rounded-t-lg">
+    <div class="bg-sage-50 border-y border-sage-100 px-5 py-2.5">
       <div class="flex items-center gap-3">
         <div class="w-5"></div>
-        <div class="flex-1 text-xs font-semibold text-gray-600 uppercase tracking-wide">Domain</div>
-        <div class="w-20 text-xs font-semibold text-gray-600 uppercase tracking-wide text-right">Threads</div>
-        <div class="w-8"></div>
+        <div class="flex-1 text-[10px] font-semibold text-sage-400 uppercase tracking-wider">Domain</div>
+        <div class="w-16 text-[10px] font-semibold text-sage-400 uppercase tracking-wider text-right">Threads</div>
+        <div class="w-7"></div>
       </div>
     </div>
 
     <!-- Domain List -->
-    <div class="border border-t-0 border-gray-200 rounded-b-lg overflow-hidden">
+    <div class="max-h-[60vh] overflow-y-auto">
       {#if filteredDomains.length === 0}
-        <div class="p-6 text-center text-gray-500 text-sm">
+        <div class="p-8 text-center text-sage-300 text-sm">
           {#if searchQuery.trim()}
             No domains match your search.
           {:else}
@@ -118,7 +114,7 @@
         </div>
       {:else}
         {#each filteredDomains as [domain, info], index (domain)}
-          <div class:border-t={index > 0} class="border-gray-100">
+          <div class:border-t={index > 0} class="border-sage-100">
             <DomainItem {domain} {info} />
           </div>
         {/each}
@@ -126,17 +122,17 @@
     </div>
 
     <!-- Summary Footer -->
-    <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-      <div class="flex items-center justify-between">
-        <div class="text-sm font-medium text-gray-700">
-          {$selectedCount} {$selectedCount === 1 ? 'domain' : 'domains'} selected for deletion
-        </div>
-        {#if $selectedCount > 0}
-          <div class="text-xs text-gray-500">
-            Review your selection, then use Preview or Execute above
+    {#if $selectedCount > 0}
+      <div class="px-5 py-3 bg-sage-50 border-t border-sage-100">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-semibold text-sage-600">
+            {$selectedCount} {$selectedCount === 1 ? 'domain' : 'domains'} selected
           </div>
-        {/if}
+          <div class="text-[11px] text-sage-400">
+            Use the button above to trash or delete
+          </div>
+        </div>
       </div>
-    </div>
+    {/if}
   </div>
 {/if}

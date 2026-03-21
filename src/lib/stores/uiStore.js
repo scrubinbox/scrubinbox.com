@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
-import { progressVisible } from './progressStore.js';
-import { clearLogs } from './progressStore.js';
+import { progressVisible, errorMessage } from './progressStore.js';
 import { resultsVisible, resultsData } from './resultsStore.js';
 
 export const domainsVisible = writable(false);
@@ -9,7 +8,7 @@ export function showProgress() {
   progressVisible.set(true);
   domainsVisible.set(false);
   resultsVisible.set(false);
-  clearLogs();
+  errorMessage.set('');
 }
 
 export function hideProgress() {
