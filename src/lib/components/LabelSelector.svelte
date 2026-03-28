@@ -7,12 +7,15 @@
 
   function handleLabelToggle(labelId) {
     if ($excludedLabelIds === null) {
-      excludedLabelIds.set([labelId]);
+      // "All" is selected — uncheck this one, keep the rest
+      excludedLabelIds.set($availableLabels.map(l => l.id).filter(id => id !== labelId));
     } else if ($excludedLabelIds.includes(labelId)) {
       const updated = $excludedLabelIds.filter(id => id !== labelId);
       excludedLabelIds.set(updated.length > 0 ? updated : null);
     } else {
-      excludedLabelIds.set([...$excludedLabelIds, labelId]);
+      const updated = [...$excludedLabelIds, labelId];
+      // If all labels are now selected, collapse back to null
+      excludedLabelIds.set(updated.length >= $availableLabels.length ? null : updated);
     }
   }
 

@@ -165,6 +165,8 @@ export class DomainCollector {
     return this.config.includeArchived ? '-in:trash -in:spam' : 'in:inbox';
   }
 
+  // it seems gmail api query isn't reliable so we 
+  // have to resort to "client-side" filtering for now
   async _fetchThreadPage(pageToken) {
     const raw = await listThreads({
       maxResults: THREAD_PAGE_SIZE,
