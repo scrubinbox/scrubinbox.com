@@ -82,9 +82,9 @@ describe('isExcludedByLabel', () => {
     return new DomainCollector(new CollectorConfig(configOverrides));
   }
 
-  it('IMPORTANT label should always exclude', () => {
+  it('IMPORTANT label does not exclude (auto-applied by Gmail)', () => {
     const collector = makeCollector();
-    expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(true);
+    expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(false);
   });
 
   it('STARRED label should always exclude', () => {
@@ -102,9 +102,9 @@ describe('isExcludedByLabel', () => {
     expect(collector._isExcludedByLabel(['INBOX', 'Label_12345'])).toBe(false);
   });
 
-  it('IMPORTANT still excluded when label exclusion disabled', () => {
+  it('IMPORTANT not excluded even when label exclusion disabled', () => {
     const collector = makeCollector({ useLabelExclusion: false });
-    expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(true);
+    expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(false);
   });
 
   it('specific excludedLabelIds only exclude matching labels', () => {
@@ -175,9 +175,15 @@ describe('shouldInclude', () => {
     expect(collector._shouldInclude(thread)).toBe(true);
   });
 
-  it('labeled/important thread is excluded', () => {
+  it('important thread is included (auto-applied by Gmail)', () => {
     const collector = makeCollector();
     const thread = makeThread('test@important.com', ['INBOX', 'IMPORTANT']);
+    expect(collector._shouldInclude(thread)).toBe(true);
+  });
+
+  it('starred thread is excluded', () => {
+    const collector = makeCollector();
+    const thread = makeThread('test@starred.com', ['INBOX', 'STARRED']);
     expect(collector._shouldInclude(thread)).toBe(false);
   });
 
@@ -224,8 +230,9 @@ describe('collect', () => {
     const result = await collector.collect();
     const dr = result.domainResults;
 
-    // important.com is IMPORTANT labeled - should not be in results
-    expect(dr['important.com']).toBeUndefined();
+    // important.com has IMPORTANT label but should still be collected
+    // (IMPORTANT is auto-applied by Gmail, not a user action)
+    expect(dr['important.com']).toBeDefined();
 
     // starred.com is STARRED labeled - should not be in results
     expect(dr['starred.com']).toBeUndefined();
@@ -374,8 +381,8 @@ describe('collect', () => {
     // labeled.com should now be in results (custom label no longer excluded)
     expect(dr['labeled.com']).toBeDefined();
 
-    // But IMPORTANT and STARRED should still be excluded
-    expect(dr['important.com']).toBeUndefined();
+    // STARRED should still be excluded, but IMPORTANT is collected
+    expect(dr['important.com']).toBeDefined();
     expect(dr['starred.com']).toBeUndefined();
   });
 });
