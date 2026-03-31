@@ -19,7 +19,15 @@ Paid inbox cleaners exist, but they cost money and require handing over access t
 4. **Preview** what will be deleted (dry-run mode)
 5. **Delete** unwanted emails in bulk
 
-Starred, important, and labeled emails are automatically protected and won't appear in scan results.
+Starred and labeled emails are automatically protected and won't appear in scan results.
+
+### Why not exclude "Important" emails?
+
+Gmail's `IMPORTANT` label is applied automatically by Google's priority inbox algorithm -- it is not an explicit user action. In practice, Gmail marks the vast majority of inbox threads as important, so excluding them would silently discard nearly all scan results. `STARRED`, by contrast, is always a deliberate user action, so starred threads are always excluded.
+
+### Why client-side filtering?
+
+Thread filtering (label exclusion, starred exclusion) is done client-side after fetching threads from the Gmail API rather than via Gmail query operators like `-is:important` or `-label:Name`. We found that Gmail's search operators behave inconsistently with the label data returned by the API -- for example, `is:important` in a query matches far more threads than those that actually carry the `IMPORTANT` label ID in the API response. Label names with spaces, nesting (`Parent/Child`), or special characters also cause query syntax issues. Client-side filtering against the actual `labelIds` returned by `threads.get` is reliable and predictable.
 
 ## Privacy & Security
 
