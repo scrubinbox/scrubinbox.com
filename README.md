@@ -27,7 +27,27 @@ Gmail's `IMPORTANT` label is applied automatically by Google's priority inbox al
 
 ### Why client-side filtering?
 
-Thread filtering (label exclusion, starred exclusion) is done client-side after fetching threads from the Gmail API rather than via Gmail query operators like `-is:important` or `-label:Name`. We found that Gmail's search operators behave inconsistently with the label data returned by the API -- for example, `is:important` in a query matches far more threads than those that actually carry the `IMPORTANT` label ID in the API response. Label names with spaces, nesting (`Parent/Child`), or special characters also cause query syntax issues. Client-side filtering against the actual `labelIds` returned by `threads.get` is reliable and predictable.
+Thread filtering (label exclusion, starred exclusion) is done client-side after fetching threads from the Gmail API rather than via Gmail query operators like `-label:Name`. We tested server-side filtering via the `threads.list` `q` parameter and found it is unreliable for real-world label names.
+
+**The `-label:` operator silently fails for labels with spaces or slashes.** Gmail's query parser treats spaces as delimiters, so `-label:Work Projects` is parsed as `-label:Work` plus the search term `Projects` -- the exclusion is lost and results are unfiltered. Neither quoting (`-label:"Work Projects"`) nor hyphenating (`-label:Work-Projects`) fixes this. Nested labels with `/` like `Finance/Receipts` also fail the same way.
+
+For simple single-word labels like `Newsletters`, `-label:Newsletters` works correctly. But since there's no way to know which labels in a user's account will work and which won't, we can't rely on it.
+
+We verified this empirically against the Gmail API:
+
+```
+Label exclusion test: "Newsletters"      -- simple name
+  label:Newsletters                         1    ← correct, 1 thread has this label
+  -in:trash -in:spam -label:Newsletters   500    ← correct, excludes the 1 thread
+  Consistency: 501 ≈ 1 + 500 = 501  ✓
+
+Label exclusion test: "Work Projects"    -- spaces in name
+  label:Work Projects                     501    ← WRONG, returns all threads
+  -in:trash -in:spam -label:Work Projects 501    ← WRONG, excludes nothing
+  Consistency: 501 ≈ 501 + 501 = 1002  ✗
+```
+
+Client-side filtering against the actual `labelIds` returned by `threads.get` is reliable and predictable regardless of label name format.
 
 ## Privacy & Security
 
