@@ -241,16 +241,6 @@ describe('collect', () => {
     expect(dr['labeled.com']).toBeUndefined();
   });
 
-  it('respects limit parameter', async () => {
-    const collector = new DomainCollector(defaultConfig({ limit: 2 }));
-    const result = await collector.collect();
-    const dr = result.domainResults;
-
-    // Should have at most 2 threads total across all domains
-    const totalThreads = Object.values(dr).reduce((sum, info) => sum + info.count, 0);
-    expect(totalThreads).toBeLessThanOrEqual(2);
-  });
-
   it('skips excluded domains', async () => {
     const collector = new DomainCollector(defaultConfig({ excludedDomains: new Set(['spam.com']) }));
     const result = await collector.collect();

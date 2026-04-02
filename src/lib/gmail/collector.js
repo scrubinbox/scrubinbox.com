@@ -36,18 +36,10 @@ export class DomainCollector {
   // === Main Entry Point ===
 
   async collect() {
-    const totalThreadCount = await this._getTotalThreadCount();
-    const scanTotal = this.config.limit
-      ? Math.min(this.config.limit, totalThreadCount)
-      : totalThreadCount;
-
-    const message = this.config.limit
-      ? `Starting domain collection (limit: ${this.config.limit} threads)...`
-      : 'Starting domain collection...';
+    const scanTotal = await this._getTotalThreadCount();
 
     await this._reportProgress('collection_started', {
-      message,
-      scan_total: scanTotal,
+      message: 'Starting domain collection...',
     });
 
     // Clear any previous state
@@ -100,16 +92,6 @@ export class DomainCollector {
           // Update pollable progress in-place (no await, no callback)
           this.progress.collected = collected;
           this.progress.uniqueDomains = Object.keys(domainCounts).length;
-
-          // Check limit (caps total threads examined, not just matched)
-          if (this.config.limit && scanned >= this.config.limit) {
-            break;
-          }
-        }
-
-        // Check if we hit limit
-        if (this.config.limit && scanned >= this.config.limit) {
-          break;
         }
 
         pageToken = page.nextPageToken;

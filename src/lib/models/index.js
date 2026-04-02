@@ -12,13 +12,11 @@
  */
 export class CollectorConfig {
   constructor({
-    limit = null,
     excludedDomains = new Set(),
     useLabelExclusion = true,
     excludedLabelIds = null,
     includeArchived = false,
   } = {}) {
-    this.limit = limit;
     this.excludedDomains = excludedDomains;
     this.useLabelExclusion = useLabelExclusion;
     this.excludedLabelIds = excludedLabelIds;
