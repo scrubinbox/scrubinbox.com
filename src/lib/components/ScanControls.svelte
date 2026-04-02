@@ -13,7 +13,6 @@
   import { getErrorMessage } from '../errors.js';
 
   let collectBtnText = 'Scan Inbox';
-  let scanLimitInput = '';
   let includeArchived = false;
 
   async function collectDomains() {
@@ -25,10 +24,7 @@
     showProgress();
     collectBtnText = 'Scanning...';
 
-    const limit = scanLimitInput ? parseInt(scanLimitInput, 10) : null;
-
     const config = new CollectorConfig({
-      limit,
       excludedDomains: new Set($excludedDomains),
       useLabelExclusion: $excludedLabelIds === null || $excludedLabelIds.length > 0,
       excludedLabelIds: $excludedLabelIds ? new Set($excludedLabelIds) : null,
@@ -72,18 +68,6 @@
     >
       {collectBtnText}
     </button>
-
-    <div class="flex items-center gap-2">
-      <label for="scan-limit" class="text-xs font-medium text-sage-400">Limit:</label>
-      <input
-        id="scan-limit"
-        type="number"
-        bind:value={scanLimitInput}
-        placeholder="All"
-        min="1"
-        class="w-20 px-2.5 py-2 border border-sage-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-300 focus:border-transparent text-sm text-sage-700"
-      />
-    </div>
 
     <label class="flex items-center gap-1.5 text-xs font-medium text-sage-400 cursor-pointer select-none">
       <input
