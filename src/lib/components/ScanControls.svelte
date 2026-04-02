@@ -12,8 +12,8 @@
   import { startProgressPolling, stopProgressPolling } from '../gmail/progressPoller.js';
   import { getErrorMessage } from '../errors.js';
 
-  let collectBtnText = 'Scan Inbox';
   let includeArchived = false;
+  let activeCollector = null;
 
   async function collectDomains() {
     if ($isCollecting) return;
@@ -22,7 +22,6 @@
     $selectedDomains = new Set();
     $expandedDomains = new Set();
     showProgress();
-    collectBtnText = 'Scanning...';
 
     const config = new CollectorConfig({
       excludedDomains: new Set($excludedDomains),
@@ -33,6 +32,7 @@
 
     const progressHandler = createProgressHandler();
     const collector = new DomainCollector(config, progressHandler);
+    activeCollector = collector;
     startProgressPolling(collector, 'collection');
 
     try {
@@ -51,8 +51,14 @@
       hideProgress();
     } finally {
       stopProgressPolling();
+      activeCollector = null;
       $isCollecting = false;
-      collectBtnText = 'Scan Inbox';
+    }
+  }
+
+  function stopScan() {
+    if (activeCollector) {
+      activeCollector.interrupted = true;
     }
   }
 
@@ -61,13 +67,22 @@
 
 <div class="bg-white rounded-xl shadow-sm p-5 border border-sage-200">
   <div class="flex flex-wrap items-center gap-3">
-    <button
-      on:click={collectDomains}
-      disabled={collectDisabled}
-      class="bg-sage-600 hover:bg-sage-700 text-white font-semibold py-2 px-5 rounded-lg disabled:bg-sage-200 disabled:cursor-not-allowed transition-colors text-sm"
-    >
-      {collectBtnText}
-    </button>
+    {#if $isCollecting}
+      <button
+        on:click={stopScan}
+        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-5 rounded-lg transition-colors text-sm"
+      >
+        Stop Scan
+      </button>
+    {:else}
+      <button
+        on:click={collectDomains}
+        disabled={collectDisabled}
+        class="bg-sage-600 hover:bg-sage-700 text-white font-semibold py-2 px-5 rounded-lg disabled:bg-sage-200 disabled:cursor-not-allowed transition-colors text-sm"
+      >
+        Scan Inbox
+      </button>
+    {/if}
 
     <label class="flex items-center gap-1.5 text-xs font-medium text-sage-400 cursor-pointer select-none">
       <input
