@@ -8,9 +8,9 @@
   import ResultsSection from './lib/components/ResultsSection.svelte';
 </script>
 
-<div class="min-h-screen bg-sage-50">
+<div class="min-h-screen bg-sage-50 flex flex-col">
   <Header />
-  <div class="container mx-auto px-4 py-6 max-w-4xl">
+  <div class="container mx-auto px-4 py-6 max-w-4xl flex-1">
     <div class="space-y-4">
       <AuthSection />
       <FilterOptions />
@@ -20,4 +20,13 @@
       <ResultsSection />
     </div>
   </div>
+  <footer class="border-t border-sage-200 py-4 px-4">
+    <div class="container mx-auto max-w-4xl flex justify-between items-center text-xs text-sage-400">
+      <span>&copy; 2026 ScrubInbox</span>
+      <div class="flex gap-4">
+        <a href="https://github.com/scrubinbox/scrubinbox.com/issues/new?labels=bug&template=bug_report.md" class="hover:text-sage-600 transition-colors">Report a Bug</a>
+        <a href="https://github.com/scrubinbox/scrubinbox.com/issues/new?labels=enhancement&template=feature_request.md" class="hover:text-sage-600 transition-colors">Feature Request</a>
+      </div>
+    </div>
+  </footer>
 </div>
