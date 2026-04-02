@@ -24,6 +24,7 @@
     <div class="container mx-auto max-w-4xl flex justify-between items-center text-xs text-sage-400">
       <span>&copy; 2026 ScrubInbox</span>
       <div class="flex gap-4">
+        <a href="https://scrubinbox.com/privacy.html" class="hover:text-sage-600 transition-colors">Privacy Policy</a>
         <a href="https://github.com/scrubinbox/scrubinbox.com/issues/new?labels=bug&template=bug_report.md" class="hover:text-sage-600 transition-colors">Report a Bug</a>
         <a href="https://github.com/scrubinbox/scrubinbox.com/issues/new?labels=enhancement&template=feature_request.md" class="hover:text-sage-600 transition-colors">Feature Request</a>
       </div>
