@@ -12,11 +12,11 @@
       </div>
       <div class="bg-red-50 p-4 rounded-lg border border-red-100">
         <div class="text-2xl font-bold text-red-600">{$resultsData.threads_deleted}</div>
-        <div class="text-[11px] text-red-400 mt-1 font-medium">Threads Deleted</div>
+        <div class="text-[11px] text-red-400 mt-1 font-medium">Threads Trashed</div>
       </div>
       <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
         <div class="text-2xl font-bold text-amber-600">{$resultsData.threads_failed_to_delete}</div>
-        <div class="text-[11px] text-amber-400 mt-1 font-medium">Failed to Delete</div>
+        <div class="text-[11px] text-amber-400 mt-1 font-medium">Failed to Trash</div>
       </div>
     </div>
   </div>
