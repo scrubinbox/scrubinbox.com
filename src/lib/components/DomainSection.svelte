@@ -12,7 +12,6 @@
 
   let searchQuery = '';
   let filteredDomains = [];
-  let permanentDelete = false;
 
   function updateFilteredDomains() {
     if (!searchQuery.trim()) {
@@ -58,11 +57,7 @@
   async function executeCleanup() {
     if ($isCleaning) return;
 
-    const action = permanentDelete ? 'permanently delete' : 'trash';
-    const warning = permanentDelete
-      ? 'This CANNOT be undone. Threads will be permanently deleted.'
-      : 'Threads will be moved to trash and can be recovered within 30 days.';
-    if (!confirm(`Are you sure you want to ${action} threads from the selected sender domains?\n\n${warning}`)) {
+    if (!confirm('Are you sure you want to trash threads from the selected sender domains?\n\nThreads will be moved to trash and can be recovered within 30 days.')) {
       return;
     }
 
@@ -71,7 +66,7 @@
 
     const threads = $collectionResult.getCleanupThreads($selectedDomains);
 
-    const config = new CleanerConfig({ permanentDelete });
+    const config = new CleanerConfig();
     const progressHandler = createProgressHandler();
     const cleaner = new DomainCleaner(config, progressHandler);
     startProgressPolling(cleaner, 'cleanup');
@@ -98,7 +93,7 @@
     <!-- Header -->
     <div class="px-5 pt-5 pb-4">
       <h3 class="text-sm font-semibold text-sage-700 mb-0.5">Review Sender Domains</h3>
-      <p class="text-xs text-sage-400">Select sender domains to clean up. Starred, important, and excluded labeled emails are skipped.</p>
+      <p class="text-xs text-sage-400">Select sender domains to clean up. Starred and excluded labeled emails are skipped.</p>
     </div>
 
     <!-- Controls -->
@@ -169,27 +164,13 @@
             {$selectedCount} sender {$selectedCount === 1 ? 'domain' : 'domains'} selected
           </div>
 
-          <div class="flex items-center gap-3 ml-auto">
-            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer select-none"
-              class:text-red-500={permanentDelete}
-              class:text-sage-400={!permanentDelete}
-            >
-              <input
-                type="checkbox"
-                bind:checked={permanentDelete}
-                class="rounded border-sage-300 text-red-500 focus:ring-red-300"
-              />
-              Permanent delete
-            </label>
-
-            <button
-              on:click={executeCleanup}
-              disabled={cleanupDisabled}
-              class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-medium py-2 px-4 rounded-lg disabled:bg-sage-50 disabled:text-sage-300 disabled:cursor-not-allowed transition-colors text-sm border border-red-200 disabled:border-sage-100"
-            >
-              {permanentDelete ? 'Permanently Delete' : 'Move to Trash'}
-            </button>
-          </div>
+          <button
+            on:click={executeCleanup}
+            disabled={cleanupDisabled}
+            class="ml-auto bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-medium py-2 px-4 rounded-lg disabled:bg-sage-50 disabled:text-sage-300 disabled:cursor-not-allowed transition-colors text-sm border border-red-200 disabled:border-sage-100"
+          >
+            Move to Trash
+          </button>
         </div>
       </div>
     {/if}

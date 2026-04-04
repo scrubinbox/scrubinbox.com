@@ -15,7 +15,6 @@ vi.mock('../api.js', () => ({
   listThreads: vi.fn(),
   getThread: vi.fn(),
   trashThread: vi.fn(),
-  deleteThread: vi.fn(),
 }));
 
 import * as api from '../api.js';

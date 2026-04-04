@@ -2,7 +2,7 @@
  * Domain Cleaner - Handles email cleanup for selected domains
  */
 
-import { trashThread, deleteThread } from './api.js';
+import { trashThread } from './api.js';
 import { CleanupStats } from '../models/index.js';
 import { API_CONCURRENCY } from '../constants.js';
 import { asyncPool } from '../asyncPool.js';
@@ -19,7 +19,6 @@ export class DomainCleaner {
       processed: 0,
       processTotal: 0,
       deleted: 0,
-      permanentDelete: false,
       status: 'idle',
     };
   }
@@ -33,7 +32,6 @@ export class DomainCleaner {
 
     // Initialize pollable progress
     this.progress.processTotal = threads.length;
-    this.progress.permanentDelete = this.config.permanentDelete;
     this.progress.status = 'running';
     this.progress.processed = 0;
     this.progress.deleted = 0;
@@ -74,11 +72,7 @@ export class DomainCleaner {
 
   async _removeThread(threadId) {
     try {
-      if (this.config.permanentDelete) {
-        await deleteThread(threadId);
-      } else {
-        await trashThread(threadId);
-      }
+      await trashThread(threadId);
       return true;
     } catch (error) {
       console.error(`Error removing thread ${threadId}:`, error);

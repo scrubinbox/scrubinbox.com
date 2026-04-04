@@ -28,10 +28,7 @@ export class CollectorConfig {
  * Configuration for DomainCleaner.
  */
 export class CleanerConfig {
-  constructor({ permanentDelete = false, limit = null } = {}) {
-    this.permanentDelete = permanentDelete;
-    this.limit = limit;
-  }
+  constructor() {}
 }
 
 // === API Response Wrappers ===
