@@ -14,6 +14,7 @@
 
   let includeArchived = false;
   let activeCollector = null;
+  let stopping = false;
 
   async function collectDomains() {
     if ($isCollecting) return;
@@ -54,12 +55,14 @@
     } finally {
       stopProgressPolling();
       activeCollector = null;
+      stopping = false;
       $isCollecting = false;
     }
   }
 
   function stopScan() {
     if (activeCollector) {
+      stopping = true;
       activeCollector.interrupted = true;
     }
   }
@@ -72,9 +75,14 @@
     {#if $isCollecting}
       <button
         on:click={stopScan}
-        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-5 rounded-lg transition-colors text-sm"
+        disabled={stopping}
+        class="text-white font-semibold py-2 px-5 rounded-lg transition-colors text-sm"
+        class:bg-red-500={!stopping}
+        class:hover:bg-red-600={!stopping}
+        class:bg-sage-400={stopping}
+        class:cursor-not-allowed={stopping}
       >
-        Stop Scan
+        {stopping ? 'Stopping...' : 'Stop Scan'}
       </button>
     {:else}
       <button
