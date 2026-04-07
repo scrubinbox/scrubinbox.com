@@ -3,7 +3,7 @@
   import { isCollecting, domains, collectionResult } from '../stores/collectionStore.js';
   import { selectedDomains, expandedDomains } from '../stores/cleanupStore.js';
   import { errorMessage } from '../stores/progressStore.js';
-  import { excludedDomains, excludedLabelIds } from '../stores/filterStore.js';
+  import { excludedDomains, excludedLabelIds, excludeStarred, excludeImportant } from '../stores/filterStore.js';
   import { showProgress, hideProgress, showDomains } from '../stores/uiStore.js';
 
   import { CollectorConfig } from '../models/index.js';
@@ -14,6 +14,7 @@
 
   let includeArchived = false;
   let activeCollector = null;
+  let stopping = false;
 
   async function collectDomains() {
     if ($isCollecting) return;
@@ -27,6 +28,8 @@
       excludedDomains: new Set($excludedDomains),
       useLabelExclusion: $excludedLabelIds === null || $excludedLabelIds.length > 0,
       excludedLabelIds: $excludedLabelIds ? new Set($excludedLabelIds) : null,
+      excludeStarred: $excludeStarred,
+      excludeImportant: $excludeImportant,
       includeArchived,
     });
 
@@ -52,12 +55,14 @@
     } finally {
       stopProgressPolling();
       activeCollector = null;
+      stopping = false;
       $isCollecting = false;
     }
   }
 
   function stopScan() {
     if (activeCollector) {
+      stopping = true;
       activeCollector.interrupted = true;
     }
   }
@@ -70,9 +75,14 @@
     {#if $isCollecting}
       <button
         on:click={stopScan}
-        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-5 rounded-lg transition-colors text-sm"
+        disabled={stopping}
+        class="text-white font-semibold py-2 px-5 rounded-lg transition-colors text-sm"
+        class:bg-red-500={!stopping}
+        class:hover:bg-red-600={!stopping}
+        class:bg-sage-400={stopping}
+        class:cursor-not-allowed={stopping}
       >
-        Stop Scan
+        {stopping ? 'Stopping...' : 'Stop Scan'}
       </button>
     {:else}
       <button
