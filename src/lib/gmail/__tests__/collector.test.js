@@ -82,14 +82,24 @@ describe('isExcludedByLabel', () => {
     return new DomainCollector(new CollectorConfig(configOverrides));
   }
 
-  it('IMPORTANT label does not exclude (auto-applied by Gmail)', () => {
+  it('STARRED excluded by default', () => {
+    const collector = makeCollector();
+    expect(collector._isExcludedByLabel(['INBOX', 'STARRED'])).toBe(true);
+  });
+
+  it('STARRED not excluded when excludeStarred is false', () => {
+    const collector = makeCollector({ excludeStarred: false });
+    expect(collector._isExcludedByLabel(['INBOX', 'STARRED'])).toBe(false);
+  });
+
+  it('IMPORTANT not excluded by default', () => {
     const collector = makeCollector();
     expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(false);
   });
 
-  it('STARRED label should always exclude', () => {
-    const collector = makeCollector();
-    expect(collector._isExcludedByLabel(['INBOX', 'STARRED'])).toBe(true);
+  it('IMPORTANT excluded when excludeImportant is true', () => {
+    const collector = makeCollector({ excludeImportant: true });
+    expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(true);
   });
 
   it('custom labels exclude by default', () => {
@@ -100,11 +110,6 @@ describe('isExcludedByLabel', () => {
   it('custom labels do not exclude when label exclusion disabled', () => {
     const collector = makeCollector({ useLabelExclusion: false });
     expect(collector._isExcludedByLabel(['INBOX', 'Label_12345'])).toBe(false);
-  });
-
-  it('IMPORTANT not excluded even when label exclusion disabled', () => {
-    const collector = makeCollector({ useLabelExclusion: false });
-    expect(collector._isExcludedByLabel(['INBOX', 'IMPORTANT'])).toBe(false);
   });
 
   it('specific excludedLabelIds only exclude matching labels', () => {

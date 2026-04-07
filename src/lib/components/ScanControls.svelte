@@ -3,7 +3,7 @@
   import { isCollecting, domains, collectionResult } from '../stores/collectionStore.js';
   import { selectedDomains, expandedDomains } from '../stores/cleanupStore.js';
   import { errorMessage } from '../stores/progressStore.js';
-  import { excludedDomains, excludedLabelIds } from '../stores/filterStore.js';
+  import { excludedDomains, excludedLabelIds, excludeStarred, excludeImportant } from '../stores/filterStore.js';
   import { showProgress, hideProgress, showDomains } from '../stores/uiStore.js';
 
   import { CollectorConfig } from '../models/index.js';
@@ -27,6 +27,8 @@
       excludedDomains: new Set($excludedDomains),
       useLabelExclusion: $excludedLabelIds === null || $excludedLabelIds.length > 0,
       excludedLabelIds: $excludedLabelIds ? new Set($excludedLabelIds) : null,
+      excludeStarred: $excludeStarred,
+      excludeImportant: $excludeImportant,
       includeArchived,
     });
 

@@ -15,11 +15,15 @@ export class CollectorConfig {
     excludedDomains = new Set(),
     useLabelExclusion = true,
     excludedLabelIds = null,
+    excludeStarred = true,
+    excludeImportant = false,
     includeArchived = false,
   } = {}) {
     this.excludedDomains = excludedDomains;
     this.useLabelExclusion = useLabelExclusion;
     this.excludedLabelIds = excludedLabelIds;
+    this.excludeStarred = excludeStarred;
+    this.excludeImportant = excludeImportant;
     this.includeArchived = includeArchived;
   }
 }

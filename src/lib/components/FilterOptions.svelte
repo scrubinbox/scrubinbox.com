@@ -1,6 +1,6 @@
 <script>
   import { isAuthenticated } from '../stores/authStore.js';
-  import { excludedDomains, excludedLabelIds, availableLabels } from '../stores/filterStore.js';
+  import { excludedDomains, excludedLabelIds, availableLabels, excludeStarred, excludeImportant } from '../stores/filterStore.js';
   import { listLabels } from '../gmail/api.js';
   import { getErrorMessage } from '../errors.js';
   import DomainExcludeInput from './DomainExcludeInput.svelte';
@@ -77,6 +77,29 @@
       </div>
 
       <LabelSelector {isLoadingLabels} {labelsError} />
+
+      <div>
+        <span class="block text-sm font-medium text-sage-700 mb-2">System label exclusions</span>
+        <div class="flex flex-col gap-2">
+          <label class="flex items-center gap-2 text-xs text-sage-600 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              bind:checked={$excludeStarred}
+              class="rounded border-sage-300 text-sage-600 focus:ring-sage-300"
+            />
+            Exclude starred threads
+          </label>
+          <label class="flex items-center gap-2 text-xs text-sage-600 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              bind:checked={$excludeImportant}
+              class="rounded border-sage-300 text-sage-600 focus:ring-sage-300"
+            />
+            Exclude important threads
+            <span class="text-sage-300">(Gmail auto-applies this to most threads)</span>
+          </label>
+        </div>
+      </div>
     </div>
   {/if}
 </div>

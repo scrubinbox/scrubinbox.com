@@ -174,10 +174,10 @@ export class DomainCollector {
   // === Filtering ===
 
   _isExcludedByLabel(labelIds) {
-    // Always exclude STARRED (explicit user action) from cleanup.
-    // IMPORTANT is not excluded — Gmail auto-applies it algorithmically
-    // to most threads, which would silently discard nearly everything.
-    if (labelIds.includes('STARRED')) {
+    if (this.config.excludeStarred && labelIds.includes('STARRED')) {
+      return true;
+    }
+    if (this.config.excludeImportant && labelIds.includes('IMPORTANT')) {
       return true;
     }
 
