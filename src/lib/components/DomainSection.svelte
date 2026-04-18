@@ -113,19 +113,19 @@
             class="w-full pl-9 pr-3 py-2 border border-sage-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-300 focus:border-transparent text-sm text-sage-700 placeholder-sage-300"
           >
         </div>
-        <div class="text-[11px] text-sage-300 mt-1">{searchResultsText}</div>
+        <div class="text-xs text-sage-300 mt-1">{searchResultsText}</div>
       </div>
 
       <div class="flex gap-2 flex-shrink-0">
         <button
           on:click={selectAll}
-          class="text-xs font-medium text-sage-500 hover:text-sage-700 py-1.5 px-3 rounded-md hover:bg-sage-50 transition-colors"
+          class="text-xs font-medium text-sage-500 hover:text-sage-700 py-2 px-3 rounded-md hover:bg-sage-50 transition-colors"
         >
           Select All
         </button>
         <button
           on:click={deselectAll}
-          class="text-xs font-medium text-sage-500 hover:text-sage-700 py-1.5 px-3 rounded-md hover:bg-sage-50 transition-colors"
+          class="text-xs font-medium text-sage-500 hover:text-sage-700 py-2 px-3 rounded-md hover:bg-sage-50 transition-colors"
         >
           Deselect All
         </button>
@@ -133,12 +133,12 @@
     </div>
 
     <!-- Table Header -->
-    <div class="bg-sage-50 border-y border-sage-100 px-5 py-2.5">
-      <div class="flex items-center gap-3">
-        <div class="w-5"></div>
-        <div class="flex-1 text-[10px] font-semibold text-sage-400 uppercase tracking-wider">Sender Domain</div>
-        <div class="w-16 text-[10px] font-semibold text-sage-400 uppercase tracking-wider text-right">Threads</div>
-        <div class="w-7"></div>
+    <div class="bg-sage-50 border-y border-sage-100 px-3 sm:px-5 py-2.5">
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="w-5 flex-shrink-0"></div>
+        <div class="flex-1 text-[11px] sm:text-xs font-semibold text-sage-400 uppercase tracking-wider">Sender Domain</div>
+        <div class="w-14 sm:w-16 flex-shrink-0 text-[11px] sm:text-xs font-semibold text-sage-400 uppercase tracking-wider text-right">Threads</div>
+        <div class="w-7 flex-shrink-0"></div>
       </div>
     </div>
 
@@ -163,13 +163,13 @@
 
     <!-- Action Footer -->
     {#if $selectedCount > 0}
-      <div class="px-5 py-3 bg-sage-50 border-t border-sage-100">
-        <div class="flex flex-wrap items-center gap-3">
+      <div class="px-3 sm:px-5 py-3 bg-sage-50 border-t border-sage-100">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
           <div class="text-xs font-semibold text-sage-600">
             {$selectedCount} sender {$selectedCount === 1 ? 'domain' : 'domains'} selected
           </div>
 
-          <div class="flex items-center gap-3 ml-auto">
+          <div class="flex items-center gap-3 sm:ml-auto">
             <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer select-none"
               class:text-red-500={permanentDelete}
               class:text-sage-400={!permanentDelete}
