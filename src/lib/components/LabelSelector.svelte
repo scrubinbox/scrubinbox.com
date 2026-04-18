@@ -85,7 +85,7 @@
       {#each $availableLabels as label}
         <button
           on:click={() => handleLabelToggle(label.id)}
-          class="px-2.5 py-1 text-xs rounded-full border transition-colors"
+          class="px-3 py-1.5 text-xs rounded-full border transition-colors"
           class:bg-sage-500={allLabelsSelected || ($excludedLabelIds && $excludedLabelIds.includes(label.id))}
           class:text-white={allLabelsSelected || ($excludedLabelIds && $excludedLabelIds.includes(label.id))}
           class:border-sage-500={allLabelsSelected || ($excludedLabelIds && $excludedLabelIds.includes(label.id))}

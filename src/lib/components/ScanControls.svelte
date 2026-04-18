@@ -94,11 +94,11 @@
       </button>
     {/if}
 
-    <label class="flex items-center gap-1.5 text-xs font-medium text-sage-400 cursor-pointer select-none">
+    <label class="flex items-center gap-2 text-sm sm:text-xs font-medium text-sage-400 cursor-pointer select-none">
       <input
         type="checkbox"
         bind:checked={includeArchived}
-        class="rounded border-sage-300 text-sage-600 focus:ring-sage-300"
+        class="h-5 w-5 sm:h-4 sm:w-4 rounded border-sage-300 text-sage-600 focus:ring-sage-300"
       />
       Include archived
     </label>

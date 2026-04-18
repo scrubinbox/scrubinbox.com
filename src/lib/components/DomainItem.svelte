@@ -36,12 +36,12 @@
 </script>
 
 <div class="transition-colors" class:bg-sage-50={isSelected} class:hover:bg-sage-50={!isSelected}>
-  <div class="px-5 py-2.5">
-    <div class="flex items-center gap-3">
+  <div class="px-3 sm:px-5 py-2.5">
+    <div class="flex items-center gap-2 sm:gap-3">
       <div class="w-5 flex-shrink-0">
         <input
           type="checkbox"
-          class="h-4 w-4 text-sage-600 border-sage-300 rounded cursor-pointer focus:ring-2 focus:ring-sage-300"
+          class="h-5 w-5 text-sage-600 border-sage-300 rounded cursor-pointer focus:ring-2 focus:ring-sage-300"
           checked={isSelected}
           on:change={toggleSelection}
         >
@@ -51,7 +51,7 @@
         <div class="text-sm font-medium text-sage-800 truncate">{domain}</div>
       </div>
 
-      <div class="w-16 flex-shrink-0 text-right">
+      <div class="w-14 sm:w-16 flex-shrink-0 text-right">
         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sage-100 text-sage-600">
           {info.count}
         </span>
@@ -60,11 +60,11 @@
       <div class="w-7 flex-shrink-0 flex justify-center">
         <button
           on:click={toggleExpand}
-          class="text-sage-300 hover:text-sage-500 transition-colors p-1 rounded hover:bg-sage-100"
+          class="text-sage-300 hover:text-sage-500 transition-colors p-2 rounded hover:bg-sage-100"
           class:text-sage-500={isExpanded}
           aria-label="Toggle threads"
         >
-          <svg class="w-3.5 h-3.5 transform transition-transform duration-200" class:rotate-180={isExpanded} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 transform transition-transform duration-200" class:rotate-180={isExpanded} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
@@ -72,8 +72,8 @@
     </div>
 
     {#if isExpanded}
-      <div class="mt-2 ml-8 pl-3 border-l-2 border-sage-200 animate-slideDown">
-        <div class="text-[10px] font-semibold text-sage-400 uppercase tracking-wider mb-1.5">
+      <div class="mt-2 ml-4 sm:ml-8 pl-3 border-l-2 border-sage-200 animate-slideDown">
+        <div class="text-[11px] sm:text-xs font-semibold text-sage-400 uppercase tracking-wider mb-1.5">
           Threads ({info.threads?.length || 0})
         </div>
         {#if !info.threads || info.threads.length === 0}

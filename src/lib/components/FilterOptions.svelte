@@ -80,23 +80,22 @@
 
       <div>
         <span class="block text-sm font-medium text-sage-700 mb-2">System label exclusions</span>
-        <div class="flex flex-col gap-2">
-          <label class="flex items-center gap-2 text-xs text-sage-600 cursor-pointer select-none">
+        <div class="flex flex-col gap-3">
+          <label class="flex items-center gap-2 text-sm sm:text-xs text-sage-600 cursor-pointer select-none">
             <input
               type="checkbox"
               bind:checked={$excludeStarred}
-              class="rounded border-sage-300 text-sage-600 focus:ring-sage-300"
+              class="h-5 w-5 sm:h-4 sm:w-4 rounded border-sage-300 text-sage-600 focus:ring-sage-300"
             />
             Exclude starred threads
           </label>
-          <label class="flex items-center gap-2 text-xs text-sage-600 cursor-pointer select-none">
+          <label class="flex items-start sm:items-center gap-2 text-sm sm:text-xs text-sage-600 cursor-pointer select-none">
             <input
               type="checkbox"
               bind:checked={$excludeImportant}
-              class="rounded border-sage-300 text-sage-600 focus:ring-sage-300"
+              class="h-5 w-5 sm:h-4 sm:w-4 rounded border-sage-300 text-sage-600 focus:ring-sage-300 mt-0.5 sm:mt-0 flex-shrink-0"
             />
-            Exclude important threads
-            <span class="text-sage-300">(Gmail auto-applies this to most threads)</span>
+            <span>Exclude important threads <span class="text-sage-300">(Gmail auto-applies this to most threads)</span></span>
           </label>
         </div>
       </div>
