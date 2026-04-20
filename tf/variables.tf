@@ -29,3 +29,8 @@ variable "google_client_id" {
   description = "Google OAuth client ID for production"
   type        = string
 }
+
+variable "google_client_id_staging" {
+  description = "Google OAuth client ID for staging"
+  type        = string
+}
