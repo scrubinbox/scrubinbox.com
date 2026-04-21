@@ -28,7 +28,7 @@ export class DomainCleaner {
 
   async cleanup(threads) {
     if (!threads || threads.length === 0) {
-      return DomainCleaner.buildStats(0, 0, 0, 0);
+      return DomainCleaner.buildStats(0, 0, 0, []);
     }
 
     // Initialize pollable progress
@@ -45,6 +45,7 @@ export class DomainCleaner {
     let totalProcessed = 0;
     let threadsDeleted = 0;
     let threadsFailed = 0;
+    const deletedThreads = [];
 
     await asyncPool(threads, API_CONCURRENCY, async (thread) => {
       if (this.interrupted) return;
@@ -53,6 +54,7 @@ export class DomainCleaner {
 
       if (success) {
         threadsDeleted += 1;
+        deletedThreads.push(thread);
       } else {
         threadsFailed += 1;
       }
@@ -64,7 +66,7 @@ export class DomainCleaner {
 
     this.progress.status = 'completed';
 
-    const result = DomainCleaner.buildStats(totalProcessed, threadsDeleted, threadsFailed);
+    const result = DomainCleaner.buildStats(totalProcessed, threadsDeleted, threadsFailed, deletedThreads);
     await this._reportProgress('cleanup_completed', result);
 
     return result;
@@ -96,11 +98,12 @@ export class DomainCleaner {
 
   // === Results ===
 
-  static buildStats(processed, deleted, failed) {
+  static buildStats(processed, deleted, failed, deletedThreads = []) {
     return new CleanupStats({
       threads_processed: processed,
       threads_deleted: deleted,
       threads_failed_to_delete: failed,
+      deleted_threads: deletedThreads,
     });
   }
 }

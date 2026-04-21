@@ -63,6 +63,11 @@ describe('cleanup', () => {
     expect(currentMocks.trashedThreads.has('thread_001')).toBe(true);
     expect(currentMocks.trashedThreads.has('thread_002')).toBe(true);
     expect(currentMocks.trashedThreads.has('thread_003')).toBe(true);
+
+    expect(result.deleted_threads).toHaveLength(3);
+    expect(result.deleted_threads.map(t => t.thread_id)).toEqual(
+      expect.arrayContaining(['thread_001', 'thread_002', 'thread_003'])
+    );
   });
 
   it('empty thread list returns zero stats', async () => {
@@ -72,6 +77,7 @@ describe('cleanup', () => {
     expect(result.threads_processed).toBe(0);
     expect(result.threads_deleted).toBe(0);
     expect(result.threads_failed_to_delete).toBe(0);
+    expect(result.deleted_threads).toHaveLength(0);
   });
 
   it('handles trash error gracefully', async () => {
@@ -83,6 +89,12 @@ describe('cleanup', () => {
     expect(result.threads_processed).toBe(3);
     expect(result.threads_deleted).toBe(2);
     expect(result.threads_failed_to_delete).toBe(1);
+
+    expect(result.deleted_threads).toHaveLength(2);
+    const deletedIds = result.deleted_threads.map(t => t.thread_id);
+    expect(deletedIds).not.toContain('thread_001');
+    expect(deletedIds).toContain('thread_002');
+    expect(deletedIds).toContain('thread_003');
   });
 
   it('calls progress callback with lifecycle events', async () => {
