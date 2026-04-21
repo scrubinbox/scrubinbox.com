@@ -5,7 +5,7 @@
  * all progress bar and text updates during collection/cleanup.
  */
 
-import { progressPercent, progressIndeterminate, errorMessage } from '../stores/progressStore.js';
+import { progressPercent, progressIndeterminate, errorMessage, progressDeletedThreads } from '../stores/progressStore.js';
 import { hideProgress, showResults } from '../stores/uiStore.js';
 
 export function createProgressHandler() {
@@ -21,6 +21,7 @@ export function createProgressHandler() {
         break; // poller handles the 100% state
       case 'cleanup_started':
         errorMessage.set('');
+        progressDeletedThreads.set([]);
         break;
       case 'cleanup_completed':
         hideProgress();

@@ -21,6 +21,7 @@ export class DomainCleaner {
       deleted: 0,
       permanentDelete: false,
       status: 'idle',
+      deletedThreads: [],
     };
   }
 
@@ -37,6 +38,7 @@ export class DomainCleaner {
     this.progress.status = 'running';
     this.progress.processed = 0;
     this.progress.deleted = 0;
+    this.progress.deletedThreads = [];
 
     await this._reportProgress('cleanup_started', {
       process_total: threads.length,
@@ -55,6 +57,7 @@ export class DomainCleaner {
       if (success) {
         threadsDeleted += 1;
         deletedThreads.push(thread);
+        this.progress.deletedThreads = deletedThreads;
       } else {
         threadsFailed += 1;
       }
