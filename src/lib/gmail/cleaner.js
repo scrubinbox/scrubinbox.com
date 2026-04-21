@@ -66,7 +66,7 @@ export class DomainCleaner {
 
     this.progress.status = 'completed';
 
-    const result = DomainCleaner.buildStats(totalProcessed, threadsDeleted, threadsFailed, deletedThreads);
+    const result = DomainCleaner.buildStats(totalProcessed, threadsDeleted, threadsFailed, deletedThreads, this.config.permanentDelete);
     await this._reportProgress('cleanup_completed', result);
 
     return result;
@@ -98,12 +98,13 @@ export class DomainCleaner {
 
   // === Results ===
 
-  static buildStats(processed, deleted, failed, deletedThreads = []) {
+  static buildStats(processed, deleted, failed, deletedThreads = [], permanentDelete = false) {
     return new CleanupStats({
       threads_processed: processed,
       threads_deleted: deleted,
       threads_failed_to_delete: failed,
       deleted_threads: deletedThreads,
+      permanent_delete: permanentDelete,
     });
   }
 }

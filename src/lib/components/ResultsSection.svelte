@@ -5,6 +5,8 @@
   let sortedDomains = [];
   let expandedDomains = new Set();
 
+  $: actionVerb = $resultsData?.permanent_delete ? 'Deleted' : 'Trashed';
+
   $: if ($resultsData?.deleted_threads) {
     const grouped = {};
     for (const thread of $resultsData.deleted_threads) {
@@ -40,17 +42,17 @@
       </div>
       <div class="bg-red-50 p-4 rounded-lg border border-red-100">
         <div class="text-2xl font-bold text-red-600">{$resultsData.threads_deleted}</div>
-        <div class="text-xs text-red-400 mt-1 font-medium">Threads Deleted</div>
+        <div class="text-xs text-red-400 mt-1 font-medium">Threads {actionVerb}</div>
       </div>
       <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
         <div class="text-2xl font-bold text-amber-600">{$resultsData.threads_failed_to_delete}</div>
-        <div class="text-xs text-amber-400 mt-1 font-medium">Failed to Delete</div>
+        <div class="text-xs text-amber-400 mt-1 font-medium">Failed to {$resultsData?.permanent_delete ? 'Delete' : 'Trash'}</div>
       </div>
     </div>
 
     {#if sortedDomains.length > 0}
       <div class="mt-5 border-t border-sage-100 pt-4">
-        <h4 class="text-xs font-semibold text-sage-500 uppercase tracking-wider mb-3">Deleted Threads by Sender Domain</h4>
+        <h4 class="text-xs font-semibold text-sage-500 uppercase tracking-wider mb-3">{actionVerb} Threads by Sender Domain</h4>
         <div class="max-h-[60vh] overflow-y-auto space-y-1">
           {#each sortedDomains as domain}
             <div class="border border-sage-100 rounded-lg overflow-hidden">
