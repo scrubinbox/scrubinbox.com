@@ -2,7 +2,7 @@
  * Progress Poller - Reads worker.progress on a timer and writes to Svelte stores
  */
 
-import { progressPercent, progressText, progressIndeterminate } from '../stores/progressStore.js';
+import { progressPercent, progressText, progressIndeterminate, progressDeletedThreads } from '../stores/progressStore.js';
 import { PROGRESS_POLL_INTERVAL_MS } from '../constants.js';
 
 let intervalId = null;
@@ -64,7 +64,7 @@ function pollCollection(p) {
 }
 
 function pollCleanup(p) {
-  const { processed, processTotal, deleted, permanentDelete } = p;
+  const { processed, processTotal, deleted, permanentDelete, deletedThreads } = p;
   const action = permanentDelete ? 'Deleting' : 'Trashing';
 
   if (processTotal > 0) {
@@ -78,4 +78,6 @@ function pollCleanup(p) {
   } else {
     progressText.set(`${action}...`);
   }
+
+  progressDeletedThreads.set(deletedThreads || []);
 }

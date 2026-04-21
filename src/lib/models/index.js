@@ -192,10 +192,13 @@ export class DomainResult {
  * Stats returned by DomainCleaner after a cleanup run.
  */
 export class CleanupStats {
-  constructor({ threads_processed, threads_deleted, threads_failed_to_delete }) {
+  constructor({ threads_processed, threads_deleted, threads_failed_to_delete, deleted_threads = [], permanent_delete = false }) {
     this.threads_processed = threads_processed;
     this.threads_deleted = threads_deleted;
     this.threads_failed_to_delete = threads_failed_to_delete;
+    /** @type {CleanupThread[]} */
+    this.deleted_threads = deleted_threads;
+    this.permanent_delete = permanent_delete;
   }
 }
 
